@@ -1,0 +1,6 @@
+C:\Users\awehr\Dropbox\Bier\KBH\kb_daten.sqlite
+
+TRUE
+TRUE
+0
+99999

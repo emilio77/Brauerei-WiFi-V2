@@ -1,0 +1,83 @@
+Installationsverzeichnis;Standard
+Taktungstemperatur;2.0
+Einschaltpuls Stufe 1;5
+Ausschaltpuls Stufe 1;15
+Einschaltpuls Stufe 2;8
+Ausschaltpuls Stufe 2;10
+Einschaltpuls Stufe 3;10
+Ausschaltpuls Stufe 3;10
+Einschaltpuls Stufe 4;10
+Ausschaltpuls Stufe 4;5
+Einschaltpuls bis 100°C;10
+Ausschaltpuls bis 100°C;0
+Überschwingungsdämpfung;1.0
+Schalthysterese Heizung;2.0
+NO LONGER USED;1
+Schalthysterese Kühlung;2.0
+Pulstemperatur Stufe 1;60
+Pulstemperatur Stufe 2;70
+Pulstemperatur Stufe 3;80
+Pulstemperatur Stufe 4;90
+NO LONGER USED;2
+Log-Datei schreiben;1
+Rührwerk mit Heizung koppeln;0
+NO LONGER USED;3
+Rührwerk-Zeitabstand1;5€€€Sekunden
+Rührwerk-Zeitabstand2;5€€€Sekunden
+Kochtemperatur;99
+Temperaturkorrekturwert;0.0
+Temperaturkorrekturfaktor;1.0
+Arduino-IP-Port-Nummer;192.168.178.255
+Arduino-UDP-Port-OUT;6540
+Arduino-UDP-Port-IN;6541
+IP-Heizung;0
+IP-Ruehrwerk;0
+IP-Pumpe;0
+IP-Alarm;0
+IP-Heizung;192.168.178.56
+IP-Ruehrwerk;192.168.178.56
+IP-Pumpe;192.168.178.56
+IP-Alarm;192.168.178.56
+User-Name-Heizung;admin
+User-Name-Ruehrwerk;admin
+User-Name-Pumpe;admin
+User-Name-Alarm;admin
+Password-Heizung;1234
+Password-Ruehrwerk;1234
+Password-Pumpe;1234
+Password-Alarm;1234
+Fensterfarbe;grau
+Versionsprüfung;1
+Dauerheizen zum Kochen;1
+Sensorueberwachung;0
+Gepulste Heizung;1
+Gradientbegrenzte Heizung;1
+Hysterese verwenden;0
+Heizung ueberwachen;1
+Überschwingungstemperatur;3.0
+Unterschwingungstemperatur;3.0
+HendiBreak;1
+Kessel-Name;Kessel€€€1
+AlarmPulsDauer;1
+AlarmPauseDauer;5
+Rührwerk-Tabellenbreite;60
+Rührwerk-An-Tabellenbreite;50
+Rührwerk-Aus-Tabellenbreite;50
+Brauerruf-Tabellenbreite;58
+Brauerruf-Text-Tabellenbreite;250
+ZusatzfunktionStart-Tabellenbreite;50
+ZusatzfunktionEnde-Tabellenbreite;50
+Zusatzfunktionen nutzen;1
+Zusatzfunktion1;Zusatzfunktion€€€1
+Zusatzfunktion2;Zusatzfunktion€€€2
+Zusatzfunktion3;Zusatzfunktion€€€3
+Zusatzfunktion4;Zusatzfunktion€€€4
+Zusatzfunktion5;Zusatzfunktion€€€5
+Zusatzfunktion6;Zusatzfunktion€€€6
+Zusatzfunktion7;Zusatzfunktion€€€7
+Zusatzfunktion8;Zusatzfunktion€€€8
+Zusatzfunktion9;Zusatzfunktion€€€9
+Zusatzfunktion10;Zusatzfunktion€€€10
+Raststartzeit;50
+Rastendzeit;50
+Brauruf-Text-gestartet;50
