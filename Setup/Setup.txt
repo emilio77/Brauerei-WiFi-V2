@@ -28,7 +28,7 @@ Kochtemperatur;99
 Temperaturkorrekturwert;0.0
 Temperaturkorrekturfaktor;1.0
 Arduino-IP-Port-Nummer;192.168.178.255
-Arduino-UDP-Port-OUT;1000
+Arduino-UDP-Port-OUT;6540
 Arduino-UDP-Port-IN;6541
 IP-Heizung;0
 IP-Ruehrwerk;0
@@ -67,7 +67,7 @@ Brauerruf-Tabellenbreite;58
 Brauerruf-Text-Tabellenbreite;250
 ZusatzfunktionStart-Tabellenbreite;50
 ZusatzfunktionEnde-Tabellenbreite;50
-Zusatzfunktionen nutzen;0
+Zusatzfunktionen nutzen;1
 Zusatzfunktion1;Zusatzfunktion€€€1
 Zusatzfunktion2;Zusatzfunktion€€€2
 Zusatzfunktion3;Zusatzfunktion€€€3
@@ -78,6 +78,6 @@ Zusatzfunktion7;Zusatzfunktion€€€7
 Zusatzfunktion8;Zusatzfunktion€€€8
 Zusatzfunktion9;Zusatzfunktion€€€9
 Zusatzfunktion10;Zusatzfunktion€€€10
-Raststartzeit;0
-Rastendzeit;0
-Brauruf-Text-gestartet;300
+Raststartzeit;50
+Rastendzeit;50
+Brauruf-Text-gestartet;50
