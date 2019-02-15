@@ -329,6 +329,9 @@ type
     Edit19: TEdit;
     BitBtn6Timer: TTimer;
     BitBtn7Timer: TTimer;
+    KopiedieserRasteinfgen1: TMenuItem;
+    Image1: TImage;
+    BitBtn13: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -435,6 +438,11 @@ type
     procedure BitBtn7TimerTimer(Sender: TObject);
     procedure StringGrid1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure KopiedieserRasteinfgen1Click(Sender: TObject);
+    procedure ComboBox36KeyPress(Sender: TObject; var Key: Char);
+    procedure Edit96KeyPress(Sender: TObject; var Key: Char);
+    procedure BitBtn13Click(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -449,7 +457,7 @@ var
   Rezeptname,Pfad,Pfad2,KBHDBPfad,RecText,arduinotfs,rastart,logname: String;
   ladefehler,pause,start,stop,file_korrupt,Rast,Brauerruf,Heizbedarf,
   Ruehrbedarf,Kuehlungbedarf,Alarmbedarf,Hendibreak,FehlerErkannt,
-  ManualMoved: boolean;
+  ManualMoved,AutoCommand: boolean;
   arduinofloattempalt,arduinofloattemp,arduinotempdelta, floattemp,
   ptime,atime,htime,rtime,gtime,kwert,kfaktor,Gradient,storetempon,
   storetempoff: Extended;
@@ -461,7 +469,8 @@ var
   Countlines,Alarmpausezaehler,verzoegerung,verzoegerung2,ruehrverzoegerung,
   ruehrverzoegerung2: integer;
   Gradientgetter: Array[1..120] of Extended;
-  funktionsinfo: Array of Boolean;
+  funktionsinfo: Array [1..10] of Boolean;
+  sl,sl2: TStringList;
 
 const
   Version = 'V 2.0 WiFi Trial';
@@ -486,7 +495,6 @@ procedure TStringGridHack.MoveRow(FromIndex, ToIndex: Integer);
 begin
   inherited;
 end;
-
 
 function MyShowMessagePos(const Msg: string; xPosForm, xPosMessage, yPosForm, yPosMessage: Integer ): Integer;
 var
@@ -514,6 +522,19 @@ begin
   Result := aMsgDlg.ShowModal;
 end;
 
+procedure ZFCheck(RastEnde:boolean);
+var ON_OFF: boolean;
+    GewaehlteFunktion: integer;
+begin with Form1 do begin
+  try
+    if RastEnde = false then GewaehlteFunktion:=strtoint(Stringgrid1.cells[10,RastCount])
+    else GewaehlteFunktion:=strtoint(Stringgrid1.cells[11,RastCount]);
+    if GewaehlteFunktion>10 then begin GewaehlteFunktion:=GewaehlteFunktion-10; ON_OFF:=false; end else ON_OFF:=true;
+    Funktionsinfo[GewaehlteFunktion]:=ON_OFF;
+  except
+  end;
+end; end;
+  
 procedure ClearStringGrid1;
 var
   c, r: Integer;
@@ -540,7 +561,7 @@ end;
 
 procedure laden(Form:TForm1; filename:string);
 var i,j: integer;
-    dummy: String;
+    dummy,dummy2: String;
 begin
   ladefehler:=false;
   ClearStringGrid1;
@@ -548,18 +569,28 @@ begin
     AssignFile(myFile, filename);                          // Rezeptdaten laden
     Reset(myFile);
     ReadLn(myFile, dummy);
-    Reset(myFile);
-    Form1.StringGrid1.RowCount := round(strtoint(dummy))+1;
-    for j:= Form1.StringGrid1.RowCount-1 downto 1 do
+    for i:= 1 to 5 do ReadLn(myFile, dummy2);
+    if (dummy2<>'Ja') and (dummy2<>'Nein') then
     begin
-      for i:= 0 to 11 do
+      ladefehler:=true;
+      ClearStringGrid1;
+    end
+    else
+    begin
+      Reset(myFile);
+      Form1.StringGrid1.RowCount := round(strtoint(dummy))+1;
+      for j:= Form1.StringGrid1.RowCount-1 downto 1 do
       begin
-        ReadLn(myFile, dummy);
-        Form1.StringGrid1.Cells[i,j]:=dummy;
+        for i:= 0 to 11 do
+        begin
+          ReadLn(myFile, dummy);
+          Form1.StringGrid1.Cells[i,j]:=dummy;
+        end;
       end;
     end;
   except
     ladefehler:=true;
+    ClearStringGrid1;
   end;
 end;
 
@@ -569,28 +600,6 @@ begin
   if changededit.Text='' then changededit.Text:='0';
   try Intdummy:=strtoint(changededit.Text); changededit.Text:=inttostr(Intdummy); except begin changededit.Text:=fail; Intdummy:=strtoint(changededit.Text); MyShowMessagePos('Unerlaubtes Zeichen!', Form1.Left, 350, Form1.Top, 250); end; end;
   if (Intdummy>max) or (Intdummy<min) then begin changededit.Text:=fail; MyShowMessagePos('Unerlaubte Wert!', Form1.Left, 350, Form1.Top, 250); end;
-end;
-
-procedure NeueRast(Reihe: Integer);
-var i: integer;
-    dummy: String;
-begin
-  ladefehler:=false;
-  try
-    AssignFile(myFile, pfad+ 'Settings\rast.rzt');                          // Rezeptdaten laden
-    Reset(myFile);
-    Form1.StringGrid1.Cells[0,Reihe]:=inttostr( Form1.StringGrid1.rowcount-1);
-    ReadLn(myFile, dummy);
-    for i:= 1 to 10 do
-    begin
-      ReadLn(myFile, dummy);
-      Form1.StringGrid1.Cells[i,Reihe]:=dummy;
-    end;
-    CloseFile(myFile);
-  except
-    ladefehler:=true;
-    CloseFile(myFile);
-  end;
 end;
 
 procedure RastEinlesen(Reihe: Integer);
@@ -606,9 +615,17 @@ begin
     Form1.Edit5.Text := cells[7,Reihe];
     if cells[8,Reihe]='Ja' then Form1.checkbox1.Checked:=true else Form1.checkbox1.Checked:=false;
     Form1.Edit6.Text := cells[9,Reihe];
-    Form1.ComboBox4.itemindex := strtoint(cells[10,Reihe]);
-    Form1.ComboBox5.itemindex := strtoint(cells[11,Reihe]);
+    try Form1.ComboBox4.itemindex := strtoint(cells[10,Reihe]) except Form1.ComboBox4.itemindex := 50; end;
+    try Form1.ComboBox5.itemindex := strtoint(cells[11,Reihe]) except Form1.ComboBox5.itemindex := 50; end;
   end;
+  if start=false then Form1.StringGrid1.DragMode:=dmManual;
+  Form1.BitBtn1.Enabled:=true;
+  Form1.BitBtn11.Enabled:=true;
+  Form1.BitBtn16.Enabled:=true;
+  Form1.BitBtn9.Enabled:=true;
+  Form1.BitBtn10.Enabled:=false;
+  Form1.BitBtn13.Enabled:=false;
+  Form1.Panel7.Color:=clBtnFace;
 end;
 
 procedure RastNeu(Reihe:integer);
@@ -627,6 +644,13 @@ begin
     cells[9,Reihe] := '';
     cells[10,Reihe] := '0';
     cells[11,Reihe] := '0';
+    if stop=false then
+    begin
+      cells[12,Reihe] := '0';
+      cells[13,Reihe] := '0';
+      cells[14,Reihe] := '';
+      cells[15,Reihe] := '';
+    end;
   end;
 end;
 
@@ -646,7 +670,16 @@ begin
     cells[9,Reihe] := Form1.Edit6.Text;
     cells[10,Reihe] := inttostr(Form1.ComboBox4.itemindex);
     cells[11,Reihe] := inttostr(Form1.ComboBox5.itemindex);
+    if stop=false then cells[12,Reihe] := cells[3,Reihe];
   end;
+  if start=false then Form1.StringGrid1.DragMode:=dmManual; 
+  Form1.BitBtn1.Enabled:=true;
+  Form1.BitBtn11.Enabled:=true;
+  Form1.BitBtn16.Enabled:=true;
+  Form1.BitBtn9.Enabled:=true;
+  Form1.BitBtn10.Enabled:=false;
+  Form1.BitBtn13.Enabled:=false;
+  Form1.Panel7.Color:=clBtnFace;
 end;
 
 procedure StartUDP;
@@ -656,7 +689,7 @@ begin with Form1 do begin
   try IdUDPClient1.Port:=strtoint(ComboBox36.Text) except IdUDPClient1.Port:=5000; end;
   IdUDPServer1.Active:=False;
   IdUDPServer1.Bindings.Clear;
-  IdUDPServer1.DefaultPort:= strtoint(ComboBox37.Text);         //Electronic device port
+  try IdUDPServer1.DefaultPort:= strtoint(ComboBox37.Text) except IdUDPServer1.DefaultPort:=5001; end;           //Electronic device port
   IdUDPServer1.Active:=true;
   IdUDPClient1.Active:=true;
   SendeTimer.Enabled := true ;
@@ -806,179 +839,190 @@ begin
   CloseFile(mySetup);
 end;
 
+procedure switchToStandardSetup;
+begin
+  sl.Free;
+  sl2.Free;
+  sl:=TStringList.Create; //Objekt erzeugen
+  sl.LoadFromFile(pfad+'Setup\Standard_Setup.txt');  //Datei in Stringliste laden
+  sl2:=TStringList.Create;
+  sl2.Delimiter:=';';
+end;
+
 procedure setup_laden(Form:TForm1; filename:string);
 var ttext:string;
-    sl,sl2: TStringList;
+    i: integer;
 begin
   file_korrupt:=false;
   try
+    i:=0;
     sl:=TStringList.Create; //Objekt erzeugen
     sl.LoadFromFile(filename);  //Datei in Stringliste laden
     sl2:=TStringList.Create;
     sl2.Delimiter:=';';
-    sl2.DelimitedText:=sl[0];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]<>'Standard' then pfad:=sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1];
     Form.Combobox13.ItemIndex := Form.Combobox13.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[2];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox14.ItemIndex := Form.Combobox14.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[3];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox15.ItemIndex := Form.Combobox15.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[4];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox17.ItemIndex := Form.Combobox17.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[5];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox18.ItemIndex := Form.Combobox18.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[6];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox19.ItemIndex := Form.Combobox19.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[7];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox20.ItemIndex := Form.Combobox20.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[8];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox21.ItemIndex := Form.Combobox21.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[9];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox22.ItemIndex := Form.Combobox22.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[10];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox24.ItemIndex := Form.Combobox24.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[11];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox23.ItemIndex := Form.Combobox23.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[12];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox25.ItemIndex := Form.Combobox25.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[13];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox26.ItemIndex := Form.Combobox26.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[14];
-    sl2.DelimitedText:=sl[15];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox29.ItemIndex := Form.Combobox29.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[16];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit83.Text:=sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[17];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit84.Text:=sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[18];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit85.Text:=sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[19];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit86.Text:=sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[20];
-    sl2.DelimitedText:=sl[21];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox32.Checked:=true else Form.CheckBox32.Checked:=false;
-    sl2.DelimitedText:=sl[22];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox42.Checked:=true else Form.CheckBox42.Checked:=false;
-    sl2.DelimitedText:=sl[23];
-    sl2.DelimitedText:=sl[24];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox45.ItemIndex := Form.Combobox45.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll])); Form1.ComboBox45Change(form1);
-    sl2.DelimitedText:=sl[25];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox3.ItemIndex := Form.Combobox3.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll])); Form1.ComboBox3Change(form1);
-    sl2.DelimitedText:=sl[26];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox38.ItemIndex := Form.Combobox38.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[27];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit93.Text := sl2[sl2.Count-1]; Form.Edit93Exit(Form1);
-    sl2.DelimitedText:=sl[28];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit94.Text := sl2[sl2.Count-1]; Form.Edit94Exit(Form1);
-    sl2.DelimitedText:=sl[29];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit96.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[30];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.Combobox36.Text := ttext;
-    sl2.DelimitedText:=sl[31];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.Combobox37.Text := ttext;
-    sl2.DelimitedText:=sl[32];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox46.Checked:=true else Form.CheckBox46.Checked:=false;
-    sl2.DelimitedText:=sl[33];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox47.Checked:=true else Form.CheckBox47.Checked:=false;
-    sl2.DelimitedText:=sl[34];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox48.Checked:=true else Form.CheckBox48.Checked:=false;
-    sl2.DelimitedText:=sl[35];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox49.Checked:=true else Form.CheckBox49.Checked:=false;
-    sl2.DelimitedText:=sl[36];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit97.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[37];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit98.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[38];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit99.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[39];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit100.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[40];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit101.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[41];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit102.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[42];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit103.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[43];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit104.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[44];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit105.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[45];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit106.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[46];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit107.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[47];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit108.Text := sl2[sl2.Count-1];
-    sl2.DelimitedText:=sl[48];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox54.ItemIndex := Form.Combobox54.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll])); Form1.ComboBox54Change(Form1);
-    sl2.DelimitedText:=sl[49];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox5.Checked:=true else Form.CheckBox1.Checked:=false;
-    sl2.DelimitedText:=sl[50];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox7.Checked:=true else Form.CheckBox2.Checked:=false;
-    sl2.DelimitedText:=sl[51];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox33.Checked:=true else Form.CheckBox33.Checked:=false;
-    sl2.DelimitedText:=sl[52];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox34.Checked:=true else Form.CheckBox34.Checked:=false;
-    sl2.DelimitedText:=sl[53];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox36.Checked:=true else Form.CheckBox36.Checked:=false;
-    sl2.DelimitedText:=sl[54];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox37.Checked:=true else Form.CheckBox37.Checked:=false;
-    sl2.DelimitedText:=sl[55];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox41.Checked:=true else Form.CheckBox41.Checked:=false;
-    sl2.DelimitedText:=sl[56];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.Combobox55.ItemIndex := Form.Combobox55.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[57];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.Combobox56.ItemIndex := Form.Combobox56.Items.IndexOf(sl2[sl2.Count-1]);
-    sl2.DelimitedText:=sl[58];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox6.Checked:=true else Form.CheckBox6.Checked:=false;
-    sl2.DelimitedText:=sl[59];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit7.Text:=ttext;
-    sl2.DelimitedText:=sl[60];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.TrackBar2.Position:=strtoint(ttext);
-    sl2.DelimitedText:=sl[61];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; Form.TrackBar3.Position:=strtoint(ttext);
-    sl2.DelimitedText:=sl[62];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit8.Text:=ttext;
-    sl2.DelimitedText:=sl[63];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit9.Text:=ttext;
-    sl2.DelimitedText:=sl[64];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit10.Text:=ttext;
-    sl2.DelimitedText:=sl[65];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit11.Text:=ttext;
-    sl2.DelimitedText:=sl[66];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit12.Text:=ttext;
-    sl2.DelimitedText:=sl[67];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit13.Text:=ttext;
-    sl2.DelimitedText:=sl[68];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit14.Text:=ttext;
-    sl2.DelimitedText:=sl[69];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox3.Checked:=true else Form.CheckBox3.Checked:=false;
-    sl2.DelimitedText:=sl[70];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit21.Text:=ttext;
-    sl2.DelimitedText:=sl[71];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit22.Text:=ttext;
-    sl2.DelimitedText:=sl[72];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit23.Text:=ttext;
-    sl2.DelimitedText:=sl[73];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit24.Text:=ttext;
-    sl2.DelimitedText:=sl[74];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit25.Text:=ttext;
-    sl2.DelimitedText:=sl[75];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit26.Text:=ttext;
-    sl2.DelimitedText:=sl[76];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit27.Text:=ttext;
-    sl2.DelimitedText:=sl[77];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit28.Text:=ttext;
-    sl2.DelimitedText:=sl[78];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit29.Text:=ttext;
-    sl2.DelimitedText:=sl[79];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit30.Text:=ttext;
-    sl2.DelimitedText:=sl[80];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit16.Text:=ttext;
-    sl2.DelimitedText:=sl[81];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit17.Text:=ttext;
-    sl2.DelimitedText:=sl[82];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit19.Text:=ttext;
   except
     file_korrupt:=true;
@@ -998,6 +1042,7 @@ begin with Form1 do begin
   if CheckBox51.Checked=true then WriteLn(myImportSettingsFile,'TRUE') else WriteLn(myImportSettingsFile,'FALSE');
   WriteLn(myImportSettingsFile,Edit91.Text);
   WriteLn(myImportSettingsFile,Edit92.Text);
+  WriteLn(myImportSettingsFile,inttostr(ComboBox43.ItemIndex));
   CloseFile(myImportSettingsFile);
 end; end;
 
@@ -1141,7 +1186,12 @@ begin with Form1 do begin
   try
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
-    sltb := slDb.GetTable('SELECT * FROM Sud');
+      if ComboBox43.Itemindex <= 0 then sltb := slDb.GetTable('SELECT * FROM Sud');
+      if ComboBox43.Itemindex = 1 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
+      if ComboBox43.Itemindex = 2 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
+      if ComboBox43.Itemindex = 3 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
+      if ComboBox43.Itemindex >= 4 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+//    sltb := slDb.GetTable('SELECT * FROM Sud');
     try
       if sltb.Count > 0 then
       begin
@@ -1214,14 +1264,19 @@ var slDBpath: string;
     sltb: TSQLIteTable;
     Tempstr: String;
     Nachiso:Extended;
-    start,i,gk,vw,k,k2,k3,c,ks,novw, vwc,hc,rkc,ihc,ric: integer;
+    start,i,gk,vw,k,k2,k3,c,ks,novw, vwc,hc,rkc,ihc,ric,wph: integer;
 begin with Form1 do begin
   if Stringgrid1.Cells[2,1]<>'' then start:=Stringgrid1.RowCount else start:=1;
   try
-    vw:=0;
+    vw:=0;hc:=0;
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
-    sltb := slDb.GetTable('SELECT * FROM Sud');
+      if ComboBox43.Itemindex <= 0 then sltb := slDb.GetTable('SELECT * FROM Sud');
+      if ComboBox43.Itemindex = 1 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
+      if ComboBox43.Itemindex = 2 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
+      if ComboBox43.Itemindex = 3 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
+      if ComboBox43.Itemindex >= 4 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+//    sltb := slDb.GetTable('SELECT * FROM Sud');
     try
       if sltb.Count > 0 then for i:=1 to Datensatz do sltb.Next;
       gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']));
@@ -1277,13 +1332,14 @@ begin with Form1 do begin
     except
       MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
     end;
+    if k<0 then k:=0;
     if k<gk then
     begin
       c:=c+1;
       Stringgrid1.RowCount:=Stringgrid1.RowCount+1;
       Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := ComboBox38.Text;
       if novw=1 then Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := inttostr(gk-k)
-      else Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := inttostr(gk-k-1);
+      else Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := inttostr(gk-k);
       rkc:=1;
     end;
     k:=0;
@@ -1381,7 +1437,10 @@ begin with Form1 do begin
     except
       MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
     end;
-    if rkc=1 then begin Stringgrid1.Cells[9,start+c] := 'Restkochzeit abgeschlossen'; c:=c+1; end;
+    if hc=0 then c:=c-1;
+    if rkc=1 then Stringgrid1.Cells[1,start+c] := 'Restkochzeit';
+    if rkc=1 then begin Stringgrid1.Cells[9,start+c] := 'Restkochzeit abgeschlossen'; end;
+    c:=c+1;
     k:=0;
     k2:=0;
     sltb := slDb.GetTable('SELECT * FROM Hopfengaben ORDER BY Zeit DESC');
@@ -1395,7 +1454,8 @@ begin with Form1 do begin
           begin
             if (gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<>k) and (Tempstr<>'') then
             begin
-              Stringgrid1.Cells[9,start+c] := Tempstr;
+              Stringgrid1.Cells[9,start+vwc+hc+rkc+wph] := Tempstr;
+              wph:=wph+1;
               c:=c+1;
               Tempstr:='';
             end;
@@ -1406,17 +1466,16 @@ begin with Form1 do begin
           end;
           sltb.Next;
         end;
-        if (novw=1) and (ihc<>0) then begin Stringgrid1.Cells[9,start+c] := Tempstr; c:=c+1; end;
+        if (novw=1) and (ihc<>0) then begin Stringgrid1.Cells[9,start+vwc+hc+rkc+ihc-1] := Tempstr; c:=c+1; end;
       end;
     except
       MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
     end;
-    if ric = 1 then Stringgrid1.Cells[9,start+c] := 'Nachisomerisierungszeit abgeschlossen';
+    if ric = 1 then Stringgrid1.Cells[9,Stringgrid1.Rowcount-1] := 'Nachisomerisierungszeit abgeschlossen';
     if vwc=1 then Stringgrid1.Cells[1,start] := 'Vorderwürze';
     for i:= 1 to hc do Stringgrid1.Cells[1,start+vwc+i-1] := 'Hopfengabe';
-    if rkc=1 then Stringgrid1.Cells[1,start+vwc+i-1] := 'Restkochzeit';
-    for i:= vwc+hc+rkc+1 to vwc+hc+rkc+ihc do Stringgrid1.Cells[1,start+vwc+i-1] := 'Iso-Hopfengabe';
-    if ric=1 then Stringgrid1.Cells[1,start+c] := 'Isomerisierung';
+    for i:= vwc+hc+rkc+1 to vwc+hc+rkc+ihc do Stringgrid1.Cells[1,start+i-1] := 'Iso-Hopfengabe';
+    if ric=1 then Stringgrid1.Cells[1,Stringgrid1.Rowcount-1] := 'Isomerisierung';
     if vw=1 then Stringgrid1.Cells[4,start] := 'Zeitrast' else Stringgrid1.Cells[4,start] := 'Heizrast';
     if vw=1 then Stringgrid1.Cells[4,start+1] := 'Heizrast' else Stringgrid1.Cells[4,start+1] := 'Zeitrast';
     for i:= start+2 to Stringgrid1.RowCount-1 do Stringgrid1.Cells[4,i] := 'Zeitrast';
@@ -1450,9 +1509,10 @@ begin with Form1 do begin
       Edit91.Text:=tempstr;
       ReadLn(myImportSettingsFile, tempstr);
       Edit92.Text:=tempstr;
+      try begin ReadLn(myImportSettingsFile, tempstr); Combobox43.ItemIndex:=strtoint(tempstr); end except Combobox43.ItemIndex:=0; end;
       CloseFile(myImportSettingsFile);
-      ScrollBar1.Position:=Scrollbar1.max;
       SQLBrowse;
+      ScrollBar1.Position:=Scrollbar1.max;
     end;
 end;end;
 
@@ -1470,6 +1530,15 @@ end;end;
 procedure TForm1.FormCreate(Sender: TObject);
 var i,buttonSelected: integer;
 begin
+
+Combobox4.DropDownCount := Combobox4.Items.Count;
+
+Combobox5.DropDownCount := Combobox5.Items.Count;
+
+  BitBtn3.Enabled:=false;
+  BitBtn1.Enabled:=true;
+  BitBtn2.Enabled:=false;
+  AutoCommand:=false;
   Start:=false;
   Stop:=true;
   Pause:=false;
@@ -1479,12 +1548,12 @@ begin
   storetempon:=111;
   storetempoff:=0;
   for i:=1 to 120 do gradientgetter[i]:=0;
+  for i:=1 to 10 do Funktionsinfo[i]:=false;
   Updown2.Visible:=false;
   BitBtn16.Enabled:=true;
   DecimalSeparator:='.';
   DateSeparator:='.';
   ShortDateFormat:='dd mm yyyy';
-  SetLength(funktionsinfo, 10);
   Form1.Top:=20;
   Application.HintHidePause:= 3000;
   Form1.Left:=20;
@@ -1493,6 +1562,8 @@ begin
   SaveDialog1.InitialDir:=pfad+'Rezepte';
   setup_laden(Form1, pfad+'Setup\Setup.txt');
   KBHSettingsLaden;
+  panel8.Color:=rgb(152,251,152);
+  panel9.Color:=rgb(240,128,128);
   if file_korrupt=false then
   begin
     DeleteFile(PChar(pfad+'Setup\Save.txt'));
@@ -1512,16 +1583,16 @@ begin
     RowCount:=2;
     ColWidths[0] := 30;
     ColWidths[1] := 150;
-    ColWidths[2] := 80;
-    ColWidths[3] := 80;
-    ColWidths[4] := 52;
+    ColWidths[2] := 45;
+    ColWidths[3] := 55;
+    ColWidths[4] := 25;
     ColWidths[5] := 58;
     ColWidths[8] := 58;
     cells[0,0] := 'Nr.';
     cells[1,0] := 'Rastbezeichnung';
-    cells[2,0] := 'Temp. in °C';
-    cells[3,0] := 'Dauer in min.';
-    cells[4,0] := 'Rastart';
+    cells[2,0] := 'Temp.';
+    cells[3,0] := 'Dauer';
+    cells[4,0] := 'Typ';
     cells[5,0] := 'Rührwerk';
     cells[6,0] := 'RW Aus';
     cells[7,0] := 'RW Ein';
@@ -1554,6 +1625,8 @@ begin
   end
   else
   Memo2.Text:='Versionsprüfung aus';
+  Edit21Change(Form1);
+  RastEinlesen(stringgrid1.Row);
 end;
 
 procedure Rastpruefung;
@@ -1567,24 +1640,29 @@ begin with Form1 do begin
   end
   else if RastCount<Stringgrid1.RowCount then
   begin
-    if RastCount<stringgrid1.RowCount-2 then stringgrid1.Row:=RastCount+2;
-    stringgrid1.Row:=RastCount;
-    Solltemp := strtoint(StringGrid1.cells[2,RastCount]);
-    UpDown2.Position := Solltemp;
-    Panel4.Caption:=StringGrid1.cells[2,RastCount]+' °C';
-    strzeit := FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
-    if (StringGrid1.cells[4,RastCount]='Heizrast') and (Solltemp<=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
-    else if (StringGrid1.cells[4,RastCount]='Kühlrast') and (Solltemp>=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
-    else if (StringGrid1.cells[4,RastCount]='Zeitrast') and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end;
-    Sollzeit := strtoint(StringGrid1.cells[3,RastCount])*60000;
-    if Sollzeit>0 then prozent := round((GetTickCount-Zeit-Pausezeit)/Sollzeit*100);
-    Restzeit := round(((Sollzeit/60000)*((100-prozent)/100)+0.49)); if restzeit<0 then Restzeit:=0;
-    if (Rast=true) and (sollzeit>0) then begin StringGrid1.cells[12,RastCount]:= inttostr(Restzeit); StringGrid1.cells[13,RastCount]:= inttostr(prozent)+' %'; end;
-    if (Rast=true) and (zeit+Sollzeit+pausezeit<GetTickCount) then begin StringGrid1.cells[13,RastCount]:='100 %'; StringGrid1.cells[15,RastCount]:=strzeit; if StringGrid1.cells[8,RastCount]='Ja' then Brauerruf:=true; RastCount:=RastCount+1; Rast:=false; end;
+    try
+      if RastCount<stringgrid1.RowCount-2 then stringgrid1.Row:=RastCount+2;
+      stringgrid1.Row:=RastCount;
+      try Solltemp := strtoint(StringGrid1.cells[2,RastCount]) except Solltemp:=0; end;
+      UpDown2.Position := Solltemp;
+      Panel4.Caption:=StringGrid1.cells[2,RastCount]+' °C';
+      strzeit := FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
+      if (StringGrid1.cells[4,RastCount]='Heizrast') and (Solltemp<=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
+      else if (StringGrid1.cells[4,RastCount]='Kühlrast') and (Solltemp>=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
+      else if (StringGrid1.cells[4,RastCount]='Zeitrast') and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end;
+      Sollzeit := strtoint(StringGrid1.cells[3,RastCount])*60000;
+      if Sollzeit>0 then prozent := round((GetTickCount-Zeit-Pausezeit)/Sollzeit*100);
+      Restzeit := round(((Sollzeit/60000)*((100-prozent)/100)+0.49)); if restzeit<0 then Restzeit:=0;
+      if (Rast=true) and (sollzeit>0) then begin StringGrid1.cells[12,RastCount]:= inttostr(Restzeit); StringGrid1.cells[13,RastCount]:= inttostr(prozent); end;
+      if (Rast=true) and (zeit+Sollzeit+pausezeit<GetTickCount) then begin StringGrid1.cells[13,RastCount]:='100'; StringGrid1.cells[15,RastCount]:=strzeit; ZFCheck(true); if StringGrid1.cells[8,RastCount]='Ja' then Brauerruf:=true; RastCount:=RastCount+1; Rast:=false; end;
+    except
+      RastCount:=9999;
+      BitBtn3Click(Form1);
+    end;
   end
   else if (RastCount<9999) and (start=true) then
   begin
-    RastCount:=9999;   
+    RastCount:=9999;
     BitBtn3Click(Form1);
   end;
 end;end;
@@ -1597,18 +1675,18 @@ begin with Form1 do begin
     with stringgrid1 do
     begin
       ColCount:=16;
-      for i:=5 to 11 do ColWidths[i] := 0;
-      cells[12,0] := 'Restzeit in min.';
+      for i:=5 to 8 do ColWidths[i] := -1;
+      cells[12,0] := 'Restzeit';
       cells[13,0] := 'Status';
       cells[14,0] := 'Startzeit';
       cells[15,0] := 'Endzeit';
-      ColWidths[9] := strtoint(edit19.Text);
-      ColWidths[12] := 90;
-      ColWidths[13] := 60;
-      ColWidths[14] := strtoint(edit17.Text);
-      ColWidths[15] := strtoint(edit16.Text);
+      try ColWidths[9] := strtoint(edit19.Text)-1 except ColWidths[9] := -1; end;
+      ColWidths[12] := 60;
+      ColWidths[13] := 102;
+      try ColWidths[14] := strtoint(edit17.Text)-1 except ColWidths[14] := -1; end;
+      try ColWidths[15] := strtoint(edit16.Text)-1 except ColWidths[15] := -1; end;
       for i:= 1 to RowCount-1 do cells[12,i]:=cells[3,i];
-      for i:= 1 to RowCount-1 do cells[13,i]:='0 %';
+      for i:= 1 to RowCount-1 do cells[13,i]:='0';
       for i:= 1 to RowCount-1 do cells[14,i]:='';
       for i:= 1 to RowCount-1 do cells[15,i]:='';
     end;
@@ -1649,7 +1727,7 @@ procedure TForm1.Edit3Exit(Sender: TObject); begin editcheck(Edit3,0,9999,'60');
 procedure TForm1.Edit4Exit(Sender: TObject); begin editcheck(Edit4,0,9999,'0'); end;
 procedure TForm1.Edit5Exit(Sender: TObject); begin editcheck(Edit5,0,9999,'9999'); end;
 
-procedure TForm1.Edit2Change(Sender: TObject); begin if TEdit(Sender).Text='' then TEdit(Sender).Text:='0'; end;
+procedure TForm1.Edit2Change(Sender: TObject); begin if TEdit(Sender).Text='' then TEdit(Sender).Text:='0'; Form1.Edit1Change(Form1); end;
 
 procedure TForm1.BitBtn9Click(Sender: TObject);
 begin
@@ -1667,7 +1745,7 @@ end;
 procedure TForm1.BitBtn8Click(Sender: TObject);
 var buttonSelected:integer;
 begin
-  OpenDialog1.FileName:='';
+  OpenDialog1.FileName:='test.rzt';
   if OpenDialog1.Execute then
   begin
     laden(Form1, OpenDialog1.FileName);
@@ -1683,18 +1761,18 @@ begin
     form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
     CloseFile(myFile);
   end;
-  RastEinlesen(stringgrid1.Row);
+ RastEinlesen(stringgrid1.Row);
   if StringGrid1.RowCount>9 then Panel3.Visible:=false else Panel3.Visible:=true;
 end;
 
 procedure TForm1.StringGrid1Click(Sender: TObject);
 begin
-  RastEinlesen(stringgrid1.Row);
   inherited;
   stringgrid1.Selection := TGridRect(Rect(stringgrid1.FixedCols,
                                  stringgrid1.Row,
                                  stringgrid1.ColCount-1,
                                  stringgrid1.Row));
+  RastEinlesen(stringgrid1.Row);
 end;
 
 procedure TForm1.ApplicationEvents1ShowHint(var HintStr: String;
@@ -1757,9 +1835,9 @@ begin
   if (RecText[1]='T') and ((RecText[6]='t') or (RecText[6]='p') or (RecText[6]='s') or (RecText[6]='e')) then
   begin
     SensorUeberwachungTimer.Enabled:=false;
-    if (RecText[6]='p') and (pause=false) then BitBtn2Click(Form1);
-    if (RecText[6]='s') and (start=false) then BitBtn1Click(Form1);
-    if (RecText[6]='e') and (stop=false) then BitBtn3Click(Form1);
+    if (RecText[6]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
+    if (RecText[6]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
+    if (RecText[6]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
     Memo1.Lines.Append('');
     arduinofloattempalt:=arduinofloattemp;
     try arduinotfs:= copy(RecText, 2, 4); arduinofloattemp:=strtofloat(arduinotfs); except end;
@@ -1954,9 +2032,17 @@ end;
 procedure TForm1.BitBtn1Click(Sender: TObject);
 begin
   Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-aktiv.bmp');
+  BitBtn1.Enabled:=false;
+  BitBtn8.Enabled:=false;
+  BitBtn2.Enabled:=true;
+  BitBtn3.Enabled:=true;
+  BitBtn4.Enabled:=true;
+  BitBtn5.Enabled:=true;
+  BitBtn6.Enabled:=true;
+  BitBtn7.Enabled:=true;
   Stringgrid1.Top:=170; Stringgrid1.Height:=383;
   Panel3.Visible:=false;
-  Groupbox5.Visible:=false;
+  CheckBox3.Enabled:=false;
   StringGrid1.PopupMenu.AutoPopup:=false;
   if pause=true then
   begin
@@ -1971,12 +2057,16 @@ begin
     rewrite(myLogFile);
     Button18.Enabled:=true;
     Button23.Enabled:=true;
+    Button2.Enabled:=false;
+    Button10.Enabled:=false;
+    Button12.Enabled:=false;
   end;
   StringGrid1.DragMode:=dmAutomatic;
   Updown2.Visible:=true;
   BitBtn16.Enabled:=false;
   storetempoff:=floattemp;
   storetempon:=floattemp;
+  AutoCommand:=false;
   start:=true;
   pause:=false;
   stop:=false;
@@ -1984,6 +2074,13 @@ end;
 
 procedure TForm1.BitBtn2Click(Sender: TObject);
 begin
+  BitBtn2.Enabled:=false;
+  BitBtn1.Enabled:=true;
+  BitBtn3.Enabled:=true;
+  BitBtn4.Enabled:=false;
+  BitBtn5.Enabled:=false;
+  BitBtn6.Enabled:=false;
+  BitBtn7.Enabled:=false;
   if start = true then
   begin
     Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-pause.bmp');
@@ -1995,27 +2092,48 @@ begin
     Stringgrid1.Top:=226; Stringgrid1.Height:=279;
     StringGrid1.PopupMenu.AutoPopup:=true;
     if StringGrid1.RowCount>9 then Panel3.Visible:=false else Panel3.Visible:=true;
+    RastEinlesen(stringgrid1.Row);
   end;
+  AutoCommand:=false;
 end;
 
 procedure TForm1.BitBtn3Click(Sender: TObject);
-var i:integer;
+var buttonSelected,i:integer;
 begin
-  Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-inaktiv.bmp');
-  Groupbox5.Visible:=true;
-  if stop = false then
+  if (stop = false) or (timertimer.Enabled = true) then
   begin
+    if (timertimer.enabled=false) and (AutoCommand=false) then
+    begin
+      buttonSelected:=MyMessageDlgPos('Brauvorgang wirklich beenden?', mtWarning, [mbOK, mbAbort], ['Ok', 'Abbruch'], Form1.Left, 350, Form1.Top, 250);
+      if buttonSelected = mrOK then else exit;
+    end;
     Stringgrid1.Top:=170; Stringgrid1.Height:=383;
+    BitBtn3.Enabled:=false;
+    BitBtn8.Enabled:=true;
+    BitBtn1.Enabled:=true;
+    BitBtn2.Enabled:=false;
     Panel4.Caption:='-- °C';
-    Label16.Caption:=('Brauvorgang wurde beendet - mit OK fortsetzen!');
-    panel8.Top:=106;
+    if (AutoCommand=false) then
+    begin
+      Label16.Caption:=('Brauvorgang wurde beendet - mit OK fortsetzen!');
+      panel8.Top:=106;
+    end
+    else Form1.Button8Click(Form1);
     LogTimer.Enabled:=false;
     LogUpdateTimer.Enabled:=false;
     Button23.Caption:='AutoUpdate Ein';
-    if checkbox32.Checked=true then CloseFile(myLogFile);
     Button18.Enabled:=false;
     Button23.Enabled:=false;
+    Button2.Enabled:=true;
+    Button10.Enabled:=true;
+    Button12.Enabled:=true;
   end;
+  BitBtn4.Enabled:=false;
+  BitBtn5.Enabled:=false;
+  BitBtn6.Enabled:=false;
+  BitBtn7.Enabled:=false;
+  Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-inaktiv.bmp');
+  Checkbox3.Enabled:=true;
   start:=false;
   pause:=false;
   stop:=true;
@@ -2024,19 +2142,22 @@ begin
   Rast:=false;
   StringGrid1.DragMode:=dmManual;
   for i:=1 to 120 do gradientgetter[i]:=0;
+  for i:=1 to 10 do Funktionsinfo[i]:=false;
   Updown2.Visible:=false;
-  BitBtn1.Enabled:=true;
-  BitBtn2.Enabled:=true;
   BitBtn16.Enabled:=true;
   Label136.Visible:=false;
   TimerTimer.Enabled:=false;
-  Form2.Label5.Caption:='false';      
+  Form2.Label5.Caption:='false';
   StringGrid1.PopupMenu.AutoPopup:=true;
+  AutoCommand:=false;
+  RastEinlesen(stringgrid1.Row);
 end;
 
 procedure TForm1.ComboBox36Change(Sender: TObject);
 begin
-  StartUDP;end;
+  if TEdit(Sender).Text='' then TEdit(Sender).Text:='0';
+  StartUDP;
+end;
 
 procedure TForm1.Edit96Enter(Sender: TObject);
 begin
@@ -2127,8 +2248,8 @@ begin
   begin
     application.Title:= Edit7.Text + ' - ' + floattostr(round(floattemp)) +'°C - ' + 'Start';
     SetStringGrid;
-    Alarmpuls:=Trackbar2.Position*10;
-    Alarmpause:=Trackbar3.Position*10;
+    Alarmpuls:=Trackbar2.Position;
+    Alarmpause:=Trackbar3.Position;
     AusgabeTimer.Enabled:=true;
     GetGradient;
     Rastpruefung;
@@ -2163,6 +2284,7 @@ end;
 
 procedure TForm1.ComboBox36Exit(Sender: TObject);
 begin
+  editcheck(Edit5,0,9999,'1000');
   SendeTimer.Enabled := true;
 end;
 
@@ -2228,11 +2350,13 @@ begin
     RastTypBtn1.glyph.LoadFromFile(pfad + 'Graphics\Uhr.bmp');
     RastTypBtn1.HelpKeyword:='Zeitrast';
   end;
+  Form1.Edit1Change(Form1);
 end;
 
 procedure TForm1.StringGrid1DrawCell(Sender: TObject; ACol, ARow: Integer;
   Rect: TRect; State: TGridDrawState);
 var S: String;
+    SI: Integer;
 begin
   if StringGrid1.Cells[ACol, ARow]='Ja' then begin
     StringGrid1.Canvas.Brush.Color := RGB(152,251,152);
@@ -2247,21 +2371,84 @@ begin
     StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
   end
   else if StringGrid1.Cells[ACol, ARow]='Heizrast' then begin
-    StringGrid1.Canvas.Brush.Color := RGB(253,106,2);
-    StringGrid1.Canvas.FillRect(Rect);
+    Image1.Picture.LoadFromFile(pfad + 'Graphics\feuer_kl.bmp');
     S := StringGrid1.Cells[ACol, ARow];
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.Draw(Rect.Left + 2, Rect.Top+ 2, Image1.Picture.Bitmap);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, '');
   end
-    else if StringGrid1.Cells[ACol, ARow]='Kühlrast' then begin
-    StringGrid1.Canvas.Brush.Color := RGB(135,206,250);
-    StringGrid1.Canvas.FillRect(Rect);
+  else if StringGrid1.Cells[ACol, ARow]='Kühlrast' then begin
+    Image1.Picture.LoadFromFile(pfad + 'Graphics\eis_kl.bmp');
     S := StringGrid1.Cells[ACol, ARow];
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.Draw(Rect.Left + 2, Rect.Top+ 2, Image1.Picture.Bitmap);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, '');
   end
   else if StringGrid1.Cells[ACol, ARow]='Zeitrast' then begin
-    StringGrid1.Canvas.Brush.Color := RGB(222,222,222);
+    Image1.Picture.LoadFromFile(pfad + 'Graphics\uhr_kl.bmp');
+    S := StringGrid1.Cells[ACol, ARow];
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.Draw(Rect.Left + 2, Rect.Top+ 2, Image1.Picture.Bitmap);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, '');
+  end
+  else if (ACol=13) and (ARow>0) then
+  begin
     StringGrid1.Canvas.FillRect(Rect);
     S := StringGrid1.Cells[ACol, ARow];
+    Try SI := strtoint(S) except SI:=0; end;
+    //Draw Rectangle1
+    StringGrid1.Canvas.Brush.Color := clWindow;
+    StringGrid1.Canvas.Pen.Color := clGreen;
+    StringGrid1.Canvas.Rectangle(Rect.Left+2, Rect.Top+2, Rect.Left+StringGrid1.ColWidths[ACol]-2, Rect.Top+21 );
+    //Draw Rectangle2
+    StringGrid1.Canvas.Brush.Color := clMoneyGreen;
+    if SI<>0 then StringGrid1.Canvas.Rectangle(Rect.Left+2, Rect.Top+2, Rect.Left+SI, Rect.Top+21 );
+    //Draw String
+    S:=S+' %';
+    StringGrid1.Canvas.Brush.Style := bsClear;
+    StringGrid1.Canvas.Font.Color := clBlack;
+    StringGrid1.Canvas.TextOut(Rect.Left+52-StringGrid1.Canvas.TextWidth(S) div 2, Rect.Top+3, S);
+  end
+  else if ((ACol=10) or (ACol=11)) and (ARow>0) then
+  begin
+    S := StringGrid1.Cells[ACol, ARow];
+    Try SI := strtoint(S) except SI:=0; end;
+    if SI>10 then
+    begin
+      S:='ZF '+inttostr(strtoint(S)-10)+' OFF';
+      StringGrid1.Canvas.Brush.Color := RGB(240,128,128);
+    end
+    else if SI>0 then
+    begin
+      S:='ZF '+S+' ON';
+      StringGrid1.Canvas.Brush.Color := RGB(152,251,152);
+    end
+    else S:='';
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+  end
+  else if (ACol=2) and (ARow>0) then
+  begin
+    S := StringGrid1.Cells[ACol, ARow]+' °C';
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+  end
+  else if (ACol=3) and (ARow>0) then
+  begin
+    S := StringGrid1.Cells[ACol, ARow]+' min.';
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+  end
+  else if (ACol=12) and (ARow>0) then
+  begin
+    S := StringGrid1.Cells[ACol, ARow]+' min.';
+    StringGrid1.Canvas.FillRect(Rect);
+    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+  end
+  else if ((ACol=6) or (ACol=7)) and (ARow>0) then
+  begin
+    S := StringGrid1.Cells[ACol, ARow]+' sek.';
+    StringGrid1.Canvas.FillRect(Rect);
     StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
   end;
 end;
@@ -2280,15 +2467,6 @@ begin
     Alarm:=0;
     Kuehlung:=0;
     Form1.SendeTimerTimer(Form1);
-    repeat hw:= FindWindow(nil, 'Administrator:  Digitemp_variabel'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Digitemp_variabel');SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Administrator:  Externe_Sensorsoftware'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Externe_Sensorsoftware');SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Administrator:  Digitemp'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Digitemp'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Auto-Starter'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Brauerei Arduino LAN Server'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
-    repeat hw:= FindWindow(nil, 'Brauerei Arduino USB Server'); SendMessage(hw, WM_CLOSE, 0, 0); until hw=0;
     application.terminate;
   end
   else CanClose:=false;
@@ -2300,15 +2478,15 @@ begin
   if stop=true then
   begin
     if TEdit(Sender).Text='' then TEdit(Sender).Text:='0';
-    stringgrid1.ColWidths[5] := strtoint(Edit8.Text);
-    stringgrid1.ColWidths[6] := strtoint(Edit9.Text);
-    stringgrid1.ColWidths[7] := strtoint(Edit10.Text);
-    stringgrid1.ColWidths[8] := strtoint(Edit11.Text);
-    stringgrid1.ColWidths[9] := strtoint(Edit12.Text);
+    try stringgrid1.ColWidths[5] := strtoint(Edit8.Text)-1 except stringgrid1.ColWidths[5] := 50; end;
+    try stringgrid1.ColWidths[6] := strtoint(Edit9.Text)-1 except stringgrid1.ColWidths[6] := 50; end;
+    try stringgrid1.ColWidths[7] := strtoint(Edit10.Text)-1 except stringgrid1.ColWidths[7] := 50; end;
+    try stringgrid1.ColWidths[8] := strtoint(Edit11.Text)-1 except stringgrid1.ColWidths[8] := 50; end;
+    try stringgrid1.ColWidths[9] := strtoint(Edit12.Text)-1 except stringgrid1.ColWidths[9] := 50; end;
     if checkbox3.Checked=true then
     begin
-      Stringgrid1.ColWidths[10] := strtoint(Edit13.Text);
-      stringgrid1.ColWidths[11] := strtoint(Edit14.Text);
+      try Stringgrid1.ColWidths[10] := strtoint(Edit13.Text)-1 except stringgrid1.ColWidths[10] := 50; end;
+      try stringgrid1.ColWidths[11] := strtoint(Edit14.Text)-1 except stringgrid1.ColWidths[11] := 50; end;
       Label5.Visible:=true;
       Label8.Visible:=true;
       Label14.Visible:=true;
@@ -2326,8 +2504,8 @@ begin
     end
     else
     begin
-      Stringgrid1.ColWidths[10] := 0;
-      Stringgrid1.ColWidths[11] := 0;
+      Stringgrid1.ColWidths[10] := -1;
+      Stringgrid1.ColWidths[11] := -1;
       Label5.Visible:=false;
       Label8.Visible:=false;
       Label14.Visible:=false;
@@ -2345,6 +2523,32 @@ begin
     end;
   end;
 end;
+
+procedure TForm1.KopiedieserRasteinfgen1Click(Sender: TObject);
+var StoredRow: integer;
+begin with Form1 do begin
+  with Stringgrid1 do
+  begin
+    StoredRow:=Row;
+    BitBtn11Click(Form1);
+    Edit1.Text := Cells[1,StoredRow];
+    Edit2.Text := Cells[2,StoredRow];
+    Edit3.Text := Cells[3,StoredRow];
+    RastTypBtn1.HelpKeyword:=(cells[4,StoredRow]); RastTypBtn1Click(Form1); RastTypBtn1Click(Form1); RastTypBtn1Click(Form1);
+    if cells[5,StoredRow]='Ja' then checkbox2.Checked:=true else checkbox2.Checked:=false;
+    Edit4.Text := cells[6,StoredRow];
+    Edit5.Text := cells[7,StoredRow];
+    if cells[8,StoredRow]='Ja' then checkbox1.Checked:=true else checkbox1.Checked:=false;
+    Edit6.Text := cells[9,StoredRow];
+    ComboBox4.itemindex := strtoint(cells[10,StoredRow]);
+    ComboBox5.itemindex := strtoint(cells[11,StoredRow]);
+    RastUebernahme(StringGrid1.Row);
+    Row:=RowCount-1;
+    RastEinlesen(Row);
+    if RowCount>9 then Panel3.Visible:=false;
+    RastUebernahme(StringGrid1.Row);
+  end;
+end;end;
 
 procedure TForm1.Einmaischen3567CDatenbernehmen1Click(Sender: TObject);
 begin
@@ -2566,6 +2770,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
   form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  Pagecontrol1.TabIndex:=0;
 end;
 
 procedure TForm1.Button10Click(Sender: TObject);
@@ -2579,6 +2784,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
   form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  Pagecontrol1.TabIndex:=0;
 end;
 
 procedure TForm1.Button12Click(Sender: TObject);
@@ -2593,6 +2799,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
   form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  Pagecontrol1.TabIndex:=0;
 end;
 
 procedure TForm1.Edit21Change(Sender: TObject);
@@ -2600,8 +2807,13 @@ var i:integer;
 begin
   for i:= 0 to 9 do
   begin
-    ComboBox5.Items[i+1]:='ZF'+inttostr(i+1)+' - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
-    ComboBox4.Items[i+1]:='ZF'+inttostr(i+1)+' - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
+    ComboBox5.Items[i+1]:='ZF'+inttostr(i+1)+' ON - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
+    ComboBox4.Items[i+1]:='ZF'+inttostr(i+1)+' ON - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
+  end;
+  for i:= 0 to 9 do
+  begin
+    ComboBox5.Items[i+11]:='ZF'+inttostr(i+1)+' OFF - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
+    ComboBox4.Items[i+11]:='ZF'+inttostr(i+1)+' OFF - '+(Form1.FindComponent('Edit' + IntToStr(21+i)) as TEdit).Text;
   end;
 end;
 
@@ -2954,63 +3166,53 @@ end;
 procedure TForm1.BitBtn6Click(Sender: TObject);
 var sollzeit,restzeit:integer;
 begin
-  if stop=false then
-  begin
-    sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
-    restzeit := strtoint(StringGrid1.cells[12,RastCount])+1;
-    StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
-    zeit:=zeit+60000;
-  end;
+  sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
+  restzeit := strtoint(StringGrid1.cells[12,RastCount])+1;
+  StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
+  zeit:=zeit+60000;
 end;
 
 procedure TForm1.BitBtn7Click(Sender: TObject);
 var sollzeit,restzeit:integer;
 begin
- if stop=false then
+  sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
+  restzeit := strtoint(StringGrid1.cells[12,RastCount])-1;
+  if Restzeit>=0 then
   begin
-    sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
-    restzeit := strtoint(StringGrid1.cells[12,RastCount])-1;
-    if Restzeit>=0 then
-    begin
-      StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
-      zeit:=zeit-60000;
-    end;
+    StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
+    zeit:=zeit-60000;
   end;
 end;
 
 procedure TForm1.BitBtn4Click(Sender: TObject);
 begin
-  if start=true then
+  if rast=true then
   begin
-    if rast=true then
-    begin
-      rast:=false;
-      StringGrid1.cells[13,RastCount]:='0 %';
-      StringGrid1.cells[15,RastCount]:='';
-    end
-    else if RastCount>1 then
-    begin
-      StringGrid1.cells[14,RastCount]:='';
-      RastCount:=RastCount-1;
-      StringGrid1.cells[13,RastCount]:='0 %';
-      StringGrid1.cells[12,RastCount]:=StringGrid1.cells[3,RastCount];
-      StringGrid1.cells[15,RastCount]:='';
-    end;
+    rast:=false;
+    StringGrid1.cells[13,RastCount]:='0';
+    StringGrid1.cells[15,RastCount]:='';
+  end
+  else if RastCount>1 then
+  begin
+    StringGrid1.cells[14,RastCount]:='';
+    RastCount:=RastCount-1;
+    StringGrid1.cells[13,RastCount]:='0';
+    StringGrid1.cells[12,RastCount]:=StringGrid1.cells[3,RastCount];
+    StringGrid1.cells[15,RastCount]:='';
   end;
 end;
 
 procedure TForm1.BitBtn5Click(Sender: TObject);
 begin
- if start=true then
+  pausezeit:=0;
+  if rast=true then
+    pausezeit:=-99999999
+  else
   begin
-    if rast=true then
-      pausezeit:=-99999999
-    else
-    begin
-      StringGrid1.cells[14,RastCount]:=FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
-      Rast:=true;
-      zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
-    end;
+    StringGrid1.cells[14,RastCount]:=FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
+    ZFCheck(false);
+    Rast:=true;
+    zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
   end;
 end;
 
@@ -3053,7 +3255,7 @@ begin
   Label136.Visible:=true;
   if (Form2.DateTimePicker1.Date<=now) and (Form2.DateTimePicker2.Time<=now) then
   begin
-    BitBtn3Click(Sender);
+    TimerTimer.Enabled:=false;
     BitBtn1Click(Sender);
     Label136.Visible:=false;
   end;
@@ -3131,7 +3333,6 @@ begin
 end;
 
 procedure TForm1.BitBtn11Click(Sender: TObject);
-var i,j : integer;
 begin
   with stringgrid1 do
   begin
@@ -3143,6 +3344,7 @@ begin
   stringgrid1.Row:=StringGrid1.RowCount-1;
   RastEinlesen(stringgrid1.Row);
   if StringGrid1.RowCount>9 then Panel3.Visible:=false;
+  RastEinlesen(stringgrid1.Row);
 end;
 
 procedure TForm1.SensorUeberwachungTimerTimer(Sender: TObject);
@@ -3177,9 +3379,9 @@ begin
   if stop=false then
   begin
     if TEdit(Sender).Text='' then TEdit(Sender).Text:='0';
-    stringgrid1.ColWidths[15] := strtoint(Edit16.Text);
-    stringgrid1.ColWidths[14] := strtoint(Edit17.Text);
-    stringgrid1.ColWidths[9] := strtoint(Edit19.Text);
+    stringgrid1.ColWidths[15] := strtoint(Edit16.Text)-1;
+    stringgrid1.ColWidths[14] := strtoint(Edit17.Text)-1;
+    stringgrid1.ColWidths[9] := strtoint(Edit19.Text)-1;
   end;
 end;
 
@@ -3192,5 +3394,27 @@ procedure TForm1.BitBtn7MouseDown(Sender: TObject; Button: TMouseButton; Shift: 
 procedure TForm1.BitBtn7MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); begin BitBtn7Timer.Enabled:=false; end;
 
 procedure TForm1.StringGrid1MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); begin manualMoved:=true; end;
+
+procedure TForm1.ComboBox36KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#48..#57]) then key:=#0; end;
+
+procedure TForm1.Edit96KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#46,#48..#57]) then key:=#0;
+end;
+
+procedure TForm1.BitBtn13Click(Sender: TObject);
+begin
+  RastEinlesen(stringgrid1.Row);
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+begin
+  Form1.StringGrid1.DragMode:=dmAutomatic;
+  BitBtn1.Enabled:=false;
+  BitBtn11.Enabled:=false;
+  BitBtn16.Enabled:=false;
+  BitBtn9.Enabled:=false;
+  BitBtn10.Enabled:=true;
+  BitBtn13.Enabled:=true;
+  Form1.panel7.Color:=rgb(240,128,128);
+end;
 
 end.

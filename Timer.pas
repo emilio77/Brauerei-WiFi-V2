@@ -43,6 +43,8 @@ end;
 procedure TForm2.BitBtn1Click(Sender: TObject);
 begin
   Form2.Visible:=false;
+  Form1.Enabled:=true;
+  Form1.BitBtn3.Enabled:=true;
   Label5.Caption:='true';
   DateTimePicker1.Time:=DateTimePicker2.Time;
   DateTimePicker2.Date:=DateTimePicker1.Date;

@@ -28,7 +28,7 @@ Kochtemperatur;99
 Temperaturkorrekturwert;0.0
 Temperaturkorrekturfaktor;1.0
 Arduino-IP-Port-Nummer;192.168.178.255
-Arduino-UDP-Port-OUT;1000
+Arduino-UDP-Port-OUT;6540
 Arduino-UDP-Port-IN;6541
 IP-Heizung;0
 IP-Ruehrwerk;0
@@ -52,25 +52,25 @@ Dauerheizen zum Kochen;1
 Sensorueberwachung;0
 Gepulste Heizung;1
 Gradientbegrenzte Heizung;1
-Hysterese verwenden;0
+Hysterese verwenden;1
 Heizung ueberwachen;1
 Überschwingungstemperatur;3.0
 Unterschwingungstemperatur;3.0
 HendiBreak;1
 Kessel-Name;Kessel€€€1
-AlarmPulsDauer;1
-AlarmPauseDauer;5
+AlarmPulsDauer;10
+AlarmPauseDauer;22
 Rührwerk-Tabellenbreite;60
-Rührwerk-An-Tabellenbreite;50
-Rührwerk-Aus-Tabellenbreite;50
+Rührwerk-An-Tabellenbreite;60
+Rührwerk-Aus-Tabellenbreite;60
 Brauerruf-Tabellenbreite;58
-Brauerruf-Text-Tabellenbreite;250
-ZusatzfunktionStart-Tabellenbreite;50
-ZusatzfunktionEnde-Tabellenbreite;50
-Zusatzfunktionen nutzen;0
-Zusatzfunktion1;Zusatzfunktion€€€1
+Brauerruf-Text-Tabellenbreite;180
+ZusatzfunktionStart-Tabellenbreite;70
+ZusatzfunktionEnde-Tabellenbreite;70
+Zusatzfunktionen nutzen;1
+Zusatzfunktion1;Mühle
 Zusatzfunktion2;Zusatzfunktion€€€2
-Zusatzfunktion3;Zusatzfunktion€€€3
+Zusatzfunktion3;Test
 Zusatzfunktion4;Zusatzfunktion€€€4
 Zusatzfunktion5;Zusatzfunktion€€€5
 Zusatzfunktion6;Zusatzfunktion€€€6
@@ -78,6 +78,6 @@ Zusatzfunktion7;Zusatzfunktion€€€7
 Zusatzfunktion8;Zusatzfunktion€€€8
 Zusatzfunktion9;Zusatzfunktion€€€9
 Zusatzfunktion10;Zusatzfunktion€€€10
-Raststartzeit;0
-Rastendzeit;0
-Brauruf-Text-gestartet;300
+Raststartzeit;130
+Rastendzeit;130
+Brauruf-Text-gestartet;0

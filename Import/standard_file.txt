@@ -1,0 +1,7 @@
+C:\Users\awehr\Desktop\kb_daten(1).sqlite
+
+TRUE
+FALSE
+0
+9999
+1
