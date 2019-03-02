@@ -11179,179 +11179,22 @@ object Form1: TForm1
         object TabSheet8: TTabSheet
           Caption = 'Hardwareparameter'
           ImageIndex = 2
-          object GroupBox1: TGroupBox
-            Left = 456
-            Top = 8
-            Width = 425
-            Height = 505
-            Caption = 'WLAN-Steckdosen-Setup'
-            TabOrder = 1
-            object Label142: TLabel
-              Left = 104
-              Top = 24
-              Width = 250
-              Height = 15
-              Caption = ' IP-Adresse:                User-Name:    Passwort:'
-            end
-            object CheckBox46: TCheckBox
-              Left = 32
-              Top = 52
-              Width = 97
-              Height = 17
-              Caption = 'Heizung'
-              TabOrder = 0
-            end
-            object CheckBox47: TCheckBox
-              Left = 32
-              Top = 84
-              Width = 97
-              Height = 17
-              Caption = 'R'#252'hrwerk'
-              TabOrder = 1
-            end
-            object CheckBox48: TCheckBox
-              Left = 32
-              Top = 116
-              Width = 97
-              Height = 17
-              Caption = 'Pumpe'
-              TabOrder = 2
-            end
-            object CheckBox49: TCheckBox
-              Left = 32
-              Top = 148
-              Width = 97
-              Height = 17
-              Caption = 'Alarm'
-              TabOrder = 3
-            end
-            object Edit97: TEdit
-              Left = 108
-              Top = 48
-              Width = 105
-              Height = 23
-              TabOrder = 4
-              Text = '192.168.178.56'
-              OnKeyPress = Edit96KeyPress
-            end
-            object Edit98: TEdit
-              Left = 108
-              Top = 80
-              Width = 105
-              Height = 23
-              TabOrder = 5
-              Text = '192.168.178.56'
-              OnKeyPress = Edit96KeyPress
-            end
-            object Edit99: TEdit
-              Left = 108
-              Top = 112
-              Width = 105
-              Height = 23
-              TabOrder = 6
-              Text = '192.168.178.56'
-              OnKeyPress = Edit96KeyPress
-            end
-            object Edit100: TEdit
-              Left = 108
-              Top = 144
-              Width = 105
-              Height = 23
-              TabOrder = 7
-              Text = '192.168.178.56'
-              OnKeyPress = Edit96KeyPress
-            end
-            object Edit101: TEdit
-              Left = 218
-              Top = 48
-              Width = 73
-              Height = 23
-              TabOrder = 8
-              Text = 'admin'
-            end
-            object Edit102: TEdit
-              Left = 218
-              Top = 80
-              Width = 73
-              Height = 23
-              TabOrder = 9
-              Text = 'admin'
-            end
-            object Edit103: TEdit
-              Left = 218
-              Top = 112
-              Width = 73
-              Height = 23
-              TabOrder = 10
-              Text = 'admin'
-            end
-            object Edit104: TEdit
-              Left = 218
-              Top = 144
-              Width = 73
-              Height = 23
-              TabOrder = 11
-              Text = 'admin'
-            end
-            object Edit105: TEdit
-              Left = 296
-              Top = 48
-              Width = 73
-              Height = 23
-              TabOrder = 12
-              Text = '1234'
-            end
-            object Edit106: TEdit
-              Left = 296
-              Top = 80
-              Width = 73
-              Height = 23
-              TabOrder = 13
-              Text = '1234'
-            end
-            object Edit107: TEdit
-              Left = 296
-              Top = 112
-              Width = 73
-              Height = 23
-              TabOrder = 14
-              Text = '1234'
-            end
-            object Edit108: TEdit
-              Left = 296
-              Top = 144
-              Width = 73
-              Height = 23
-              TabOrder = 15
-              Text = '1234'
-            end
-          end
           object GroupBox2: TGroupBox
             Left = 8
-            Top = 8
-            Width = 433
-            Height = 505
+            Top = 80
+            Width = 441
+            Height = 81
             Caption = 'IMiniBrauerei- / IThermometer-Setup'
             TabOrder = 0
             object Label138: TLabel
-              Left = 11
+              Left = 19
               Top = 24
               Width = 235
               Height = 15
               Caption = 'IP-OUT:                         Port-OUT:        Port-IN:'
             end
-            object Memo1: TMemo
-              Left = 8
-              Top = 72
-              Width = 401
-              Height = 425
-              TabStop = False
-              ReadOnly = True
-              ScrollBars = ssVertical
-              TabOrder = 3
-            end
             object ComboBox36: TComboBox
-              Left = 125
+              Left = 133
               Top = 40
               Width = 65
               Height = 23
@@ -11829,7 +11672,7 @@ object Form1: TForm1
                 '9050')
             end
             object ComboBox37: TComboBox
-              Left = 202
+              Left = 210
               Top = 40
               Width = 65
               Height = 23
@@ -12307,7 +12150,7 @@ object Form1: TForm1
                 '9050')
             end
             object Edit96: TEdit
-              Left = 8
+              Left = 16
               Top = 40
               Width = 105
               Height = 23
@@ -12316,6 +12159,359 @@ object Form1: TForm1
               OnEnter = Edit96Enter
               OnExit = Edit96Exit
               OnKeyPress = Edit96KeyPress
+            end
+          end
+          object GroupBox1: TGroupBox
+            Left = 8
+            Top = 344
+            Width = 441
+            Height = 169
+            Caption = 'Edimax'
+            TabOrder = 1
+            object Label142: TLabel
+              Left = 103
+              Top = 21
+              Width = 91
+              Height = 15
+              Caption = ' IP-Adresse:        '
+            end
+            object Label19: TLabel
+              Left = 219
+              Top = 19
+              Width = 159
+              Height = 15
+              Caption = 'User-Name:            Passwort:'
+            end
+            object CheckBox46: TCheckBox
+              Left = 16
+              Top = 43
+              Width = 97
+              Height = 17
+              Caption = 'Heizung'
+              TabOrder = 0
+            end
+            object CheckBox47: TCheckBox
+              Left = 16
+              Top = 74
+              Width = 97
+              Height = 17
+              Caption = 'R'#252'hrwerk'
+              TabOrder = 1
+            end
+            object CheckBox48: TCheckBox
+              Left = 16
+              Top = 106
+              Width = 97
+              Height = 17
+              Caption = 'Pumpe'
+              TabOrder = 2
+            end
+            object CheckBox49: TCheckBox
+              Left = 16
+              Top = 138
+              Width = 97
+              Height = 17
+              Caption = 'Alarm'
+              TabOrder = 3
+            end
+            object Edit97: TEdit
+              Left = 102
+              Top = 39
+              Width = 105
+              Height = 23
+              TabOrder = 4
+              Text = '192.168.178.56'
+            end
+            object Edit98: TEdit
+              Left = 102
+              Top = 70
+              Width = 105
+              Height = 23
+              TabOrder = 5
+              Text = '192.168.178.56'
+            end
+            object Edit99: TEdit
+              Left = 102
+              Top = 102
+              Width = 105
+              Height = 23
+              TabOrder = 6
+              Text = '192.168.178.56'
+            end
+            object Edit100: TEdit
+              Left = 102
+              Top = 134
+              Width = 105
+              Height = 23
+              TabOrder = 7
+              Text = '192.168.178.56'
+            end
+            object Edit101: TEdit
+              Left = 217
+              Top = 38
+              Width = 96
+              Height = 23
+              TabOrder = 8
+              Text = 'admin'
+            end
+            object Edit102: TEdit
+              Left = 217
+              Top = 70
+              Width = 96
+              Height = 23
+              TabOrder = 9
+              Text = 'admin'
+            end
+            object Edit103: TEdit
+              Left = 217
+              Top = 102
+              Width = 96
+              Height = 23
+              TabOrder = 10
+              Text = 'admin'
+            end
+            object Edit104: TEdit
+              Left = 217
+              Top = 134
+              Width = 96
+              Height = 23
+              TabOrder = 11
+              Text = 'admin'
+            end
+            object Edit105: TEdit
+              Left = 321
+              Top = 38
+              Width = 88
+              Height = 23
+              TabOrder = 12
+              Text = '1234'
+            end
+            object Edit106: TEdit
+              Left = 321
+              Top = 70
+              Width = 88
+              Height = 23
+              TabOrder = 13
+              Text = '1234'
+            end
+            object Edit107: TEdit
+              Left = 321
+              Top = 102
+              Width = 88
+              Height = 23
+              TabOrder = 14
+              Text = '1234'
+            end
+            object Edit108: TEdit
+              Left = 321
+              Top = 134
+              Width = 88
+              Height = 23
+              TabOrder = 15
+              Text = '1234'
+            end
+          end
+          object GroupBox11: TGroupBox
+            Left = 464
+            Top = 8
+            Width = 417
+            Height = 505
+            Caption = 'MemoBox'
+            TabOrder = 2
+            object Memo1: TMemo
+              Left = 8
+              Top = 24
+              Width = 401
+              Height = 473
+              TabStop = False
+              ReadOnly = True
+              ScrollBars = ssVertical
+              TabOrder = 0
+            end
+          end
+          object GroupBox12: TGroupBox
+            Left = 8
+            Top = 8
+            Width = 441
+            Height = 65
+            Caption = 'Temperaturmessung'
+            TabOrder = 3
+            object ComboBox1: TComboBox
+              Left = 14
+              Top = 28
+              Width = 254
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 0
+              Text = 'IMiniBrauerei / IThermometer'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                'IMiniBrauerei / IThermometer'
+                'Tasmota Device - Heizung'
+                'Tasmota Device - R'#252'hrwerk'
+                'Tasmota Device - K'#252'hlung'
+                'Tasmota Device - Alarm')
+            end
+          end
+          object GroupBox10: TGroupBox
+            Left = 8
+            Top = 168
+            Width = 441
+            Height = 169
+            Caption = 'Tasmota'
+            TabOrder = 4
+            object Label33: TLabel
+              Left = 103
+              Top = 21
+              Width = 91
+              Height = 15
+              Caption = ' IP-Adresse:        '
+            end
+            object Label35: TLabel
+              Left = 219
+              Top = 19
+              Width = 39
+              Height = 15
+              Caption = 'Relais:'
+            end
+            object CheckBox8: TCheckBox
+              Left = 16
+              Top = 43
+              Width = 97
+              Height = 17
+              Caption = 'Heizung'
+              TabOrder = 0
+            end
+            object CheckBox9: TCheckBox
+              Left = 16
+              Top = 74
+              Width = 97
+              Height = 17
+              Caption = 'R'#252'hrwerk'
+              TabOrder = 1
+            end
+            object CheckBox10: TCheckBox
+              Left = 16
+              Top = 106
+              Width = 97
+              Height = 17
+              Caption = 'Pumpe'
+              TabOrder = 2
+            end
+            object CheckBox11: TCheckBox
+              Left = 16
+              Top = 138
+              Width = 97
+              Height = 17
+              Caption = 'Alarm'
+              TabOrder = 3
+            end
+            object Edit110: TEdit
+              Left = 102
+              Top = 39
+              Width = 105
+              Height = 23
+              TabOrder = 4
+              Text = '192.168.178.56'
+            end
+            object Edit111: TEdit
+              Left = 102
+              Top = 70
+              Width = 105
+              Height = 23
+              TabOrder = 5
+              Text = '192.168.178.56'
+            end
+            object Edit112: TEdit
+              Left = 102
+              Top = 102
+              Width = 105
+              Height = 23
+              TabOrder = 6
+              Text = '192.168.178.56'
+            end
+            object Edit113: TEdit
+              Left = 102
+              Top = 134
+              Width = 105
+              Height = 23
+              TabOrder = 7
+              Text = '192.168.178.56'
+            end
+            object ComboBox6: TComboBox
+              Left = 217
+              Top = 39
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 8
+              Text = 'Relais 1'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                'Relais 1'
+                'Relais 2'
+                'Relais 3'
+                'Relais 4')
+            end
+            object ComboBox7: TComboBox
+              Left = 217
+              Top = 70
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 9
+              Text = 'Relais 1'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                'Relais 1'
+                'Relais 2'
+                'Relais 3'
+                'Relais 4')
+            end
+            object ComboBox8: TComboBox
+              Left = 217
+              Top = 102
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 10
+              Text = 'Relais 1'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                'Relais 1'
+                'Relais 2'
+                'Relais 3'
+                'Relais 4')
+            end
+            object ComboBox9: TComboBox
+              Left = 217
+              Top = 134
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 11
+              Text = 'Relais 1'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                'Relais 1'
+                'Relais 2'
+                'Relais 3'
+                'Relais 4')
             end
           end
         end
@@ -12435,7 +12631,7 @@ object Form1: TForm1
             end
             object Edit13: TEdit
               Left = 166
-              Top = 171
+              Top = 147
               Width = 41
               Height = 23
               TabOrder = 6
@@ -12446,7 +12642,7 @@ object Form1: TForm1
             end
             object Edit14: TEdit
               Left = 166
-              Top = 147
+              Top = 171
               Width = 41
               Height = 23
               TabOrder = 5
@@ -16606,7 +16802,7 @@ object Form1: TForm1
     Left = 632
   end
   object HendiTimer: TTimer
-    Interval = 6000000
+    Interval = 3600000
     OnTimer = HendiTimerTimer
     Left = 664
   end
@@ -16644,5 +16840,28 @@ object Form1: TForm1
     Interval = 200
     OnTimer = BitBtn7TimerTimer
     Left = 757
+  end
+  object ReadTasmota: TTimer
+    Interval = 5000
+    OnTimer = ReadTasmotaTimer
+    Left = 786
+  end
+  object IdHTTP2: TIdHTTP
+    MaxLineAction = maException
+    ReadTimeout = 200
+    AuthRetries = 0
+    AllowCookies = True
+    ProxyParams.BasicAuthentication = False
+    ProxyParams.ProxyPort = 0
+    Request.ContentLength = -1
+    Request.ContentRangeEnd = 0
+    Request.ContentRangeStart = 0
+    Request.ContentType = 'text/html'
+    Request.Accept = 'text/html, */*'
+    Request.BasicAuthentication = False
+    Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
+    HTTPOptions = [hoForceEncodeParams]
+    Left = 887
+    Top = 526
   end
 end

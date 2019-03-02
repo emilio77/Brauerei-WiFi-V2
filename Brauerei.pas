@@ -2,7 +2,7 @@ unit Brauerei;
 
 interface
 
-uses
+uses                                                                                                                       
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, StdCtrls, Buttons, ComCtrls, TabNotBk, ExtCtrls, jpeg,
   AppEvnts, Series, TeEngine, TeeProcs, Chart, OleCtrls, SHDocVw, Menus,
@@ -111,27 +111,8 @@ type
     IdUDPServer1: TIdUDPServer;
     IdUDPClient1: TIdUDPClient;
     SendeTimer: TTimer;
-    GroupBox1: TGroupBox;
-    Label142: TLabel;
-    CheckBox46: TCheckBox;
-    CheckBox47: TCheckBox;
-    CheckBox48: TCheckBox;
-    CheckBox49: TCheckBox;
-    Edit97: TEdit;
-    Edit98: TEdit;
-    Edit99: TEdit;
-    Edit100: TEdit;
-    Edit101: TEdit;
-    Edit102: TEdit;
-    Edit103: TEdit;
-    Edit104: TEdit;
-    Edit105: TEdit;
-    Edit106: TEdit;
-    Edit107: TEdit;
-    Edit108: TEdit;
     GroupBox2: TGroupBox;
     Label138: TLabel;
-    Memo1: TMemo;
     ComboBox36: TComboBox;
     ComboBox37: TComboBox;
     Edit96: TEdit;
@@ -332,6 +313,46 @@ type
     KopiedieserRasteinfgen1: TMenuItem;
     Image1: TImage;
     BitBtn13: TBitBtn;
+    GroupBox1: TGroupBox;
+    Label142: TLabel;
+    CheckBox46: TCheckBox;
+    CheckBox47: TCheckBox;
+    CheckBox48: TCheckBox;
+    CheckBox49: TCheckBox;
+    Edit97: TEdit;
+    Edit98: TEdit;
+    Edit99: TEdit;
+    Edit100: TEdit;
+    GroupBox11: TGroupBox;
+    Memo1: TMemo;
+    GroupBox12: TGroupBox;
+    ComboBox1: TComboBox;
+    ReadTasmota: TTimer;
+    IdHTTP2: TIdHTTP;
+    Label19: TLabel;
+    Edit101: TEdit;
+    Edit102: TEdit;
+    Edit103: TEdit;
+    Edit104: TEdit;
+    Edit105: TEdit;
+    Edit106: TEdit;
+    Edit107: TEdit;
+    Edit108: TEdit;
+    GroupBox10: TGroupBox;
+    Label33: TLabel;
+    Label35: TLabel;
+    CheckBox8: TCheckBox;
+    CheckBox9: TCheckBox;
+    CheckBox10: TCheckBox;
+    CheckBox11: TCheckBox;
+    Edit110: TEdit;
+    Edit111: TEdit;
+    Edit112: TEdit;
+    Edit113: TEdit;
+    ComboBox6: TComboBox;
+    ComboBox7: TComboBox;
+    ComboBox8: TComboBox;
+    ComboBox9: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -443,6 +464,7 @@ type
     procedure Edit96KeyPress(Sender: TObject; var Key: Char);
     procedure BitBtn13Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
+    procedure ReadTasmotaTimer(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -473,7 +495,7 @@ var
   sl,sl2: TStringList;
 
 const
-  Version = 'V 2.0 WiFi Trial';
+  Version = 'V 2.0';
 
 implementation
 
@@ -602,6 +624,43 @@ begin
   if (Intdummy>max) or (Intdummy<min) then begin changededit.Text:=fail; MyShowMessagePos('Unerlaubte Wert!', Form1.Left, 350, Form1.Top, 250); end;
 end;
 
+procedure WLANOut_Tasmota;
+var xml,xml2,user,password,ip: string;
+begin
+  if Heizung<>0 then xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20Off';
+  if Form1.CheckBox8.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if Ruehrwerk<>0 then xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20Off';
+  if Form1.CheckBox9.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if Kuehlung<>0 then  xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20Off';
+  if Form1.CheckBox10.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if Alarm<>0 then  xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20Off';
+  if Form1.CheckBox11.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+end;
+
+procedure WLANOut;
+var
+  i: integer;
+  xml,xml2,user,password,ip: string;
+begin
+  for i:= 0 to 3 do
+  begin
+    if i=0 then if Heizung<>0 then xml:='ON.xml' else xml:='OFF.xml';;
+    if i=1 then if Ruehrwerk<>0 then xml:='ON.xml' else xml:='OFF.xml';;
+    if i=2 then if Kuehlung<>0 then xml:='ON.xml' else xml:='OFF.xml';;
+    if i=3 then if Alarm<>0 then xml:='ON.xml' else xml:='OFF.xml';;
+    user:=(Form1.FindComponent('Edit' + IntToStr(101+i)) as TEdit).Text;
+    ip:=(Form1.FindComponent('Edit' + IntToStr(97+i)) as TEdit).Text;
+    password:=(Form1.FindComponent('Edit' + IntToStr(105+i)) as TEdit).Text;
+    if (Form1.FindComponent('CheckBox' + IntToStr(46+i)) as TCheckBox).Checked=true then
+    begin
+      xml2:='-d @'+xml+' http://'+user+':'+password+'@'+ip+':10000/smartplug.cgi';
+      ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml2),PChar(pfad+'curl'), SW_HIDE);
+      xml:='-d @'+xml+' -v http://'+ip+':10000/smartplug.cgi --digest -u '+user+':'+password;
+      ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+    end;
+  end;
+end;
+
 procedure RastEinlesen(Reihe: Integer);
 begin
   with Form1.StringGrid1 do
@@ -618,10 +677,13 @@ begin
     try Form1.ComboBox4.itemindex := strtoint(cells[10,Reihe]) except Form1.ComboBox4.itemindex := 50; end;
     try Form1.ComboBox5.itemindex := strtoint(cells[11,Reihe]) except Form1.ComboBox5.itemindex := 50; end;
   end;
-  if start=false then Form1.StringGrid1.DragMode:=dmManual;
-  Form1.BitBtn1.Enabled:=true;
+  if start=false then
+  begin
+    Form1.StringGrid1.DragMode:=dmManual;
+    Form1.BitBtn1.Enabled:=true;
+    if pause=false then Form1.BitBtn16.Enabled:=true;
+  end;
   Form1.BitBtn11.Enabled:=true;
-  Form1.BitBtn16.Enabled:=true;
   Form1.BitBtn9.Enabled:=true;
   Form1.BitBtn10.Enabled:=false;
   Form1.BitBtn13.Enabled:=false;
@@ -754,7 +816,7 @@ begin
   WriteLn(mySetup,'NO LONGER USED;2');
   if Form.CheckBox32.Checked=true then WriteLn(mySetup,'Log-Datei schreiben;1') else WriteLn(mySetup,'Log-Datei schreiben;0');
   if Form.CheckBox42.Checked=true then WriteLn(mySetup,'Rührwerk mit Heizung koppeln;1') else WriteLn(mySetup,'Rührwerk mit Heizung koppeln;0');
-  WriteLn(mySetup,'NO LONGER USED;3');
+  WriteLn(mySetup,'Temperaturmessungs-Device;'+stringreplace(Form.ComboBox1.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Rührwerk-Zeitabstand1;'+stringreplace(Form.ComboBox45.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Rührwerk-Zeitabstand2;'+stringreplace(Form.ComboBox3.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Kochtemperatur;'+Form.ComboBox38.Text);
@@ -836,6 +898,18 @@ begin
   WriteLn(mySetup,'Rastendzeit;'+dummyfilename);
   dummyfilename:=stringreplace(Form.Edit19.Text,' ','€€€',[rfReplaceAll]);
   WriteLn(mySetup,'Brauruf-Text-gestartet;'+dummyfilename);
+  if Form.CheckBox8.Checked=true then WriteLn(mySetup,'Tasmota-Heizung;1') else WriteLn(mySetup,'IP-Heizung;0');
+  if Form.CheckBox9.Checked=true then WriteLn(mySetup,'Tasmota-Ruehrwerk;1') else WriteLn(mySetup,'IP-Ruehrwerk;0');
+  if Form.CheckBox10.Checked=true then WriteLn(mySetup,'Tasmota-Pumpe;1') else WriteLn(mySetup,'IP-Pumpe;0');
+  if Form.CheckBox11.Checked=true then WriteLn(mySetup,'Tasmota-Alarm;1') else WriteLn(mySetup,'IP-Alarm;0');
+  WriteLn(mySetup,'Tasmota-Heizung;'+Form.Edit110.Text);
+  WriteLn(mySetup,'Tasmota-Ruehrwerk;'+Form.Edit111.Text);
+  WriteLn(mySetup,'Tasmota-Pumpe;'+Form.Edit112.Text);
+  WriteLn(mySetup,'Tasmota-Alarm;'+Form.Edit113.Text);
+  WriteLn(mySetup,'Tasmota-Heizung;'+stringreplace(Form.ComboBox6.Text,' ','€€€',[rfReplaceAll]));
+  WriteLn(mySetup,'Tasmota-Ruehrwerk;'+stringreplace(Form.ComboBox7.Text,' ','€€€',[rfReplaceAll]));
+  WriteLn(mySetup,'Tasmota-Pumpe;'+stringreplace(Form.ComboBox8.Text,' ','€€€',[rfReplaceAll]));
+  WriteLn(mySetup,'Tasmota-Alarm;'+stringreplace(Form.ComboBox9.Text,' ','€€€',[rfReplaceAll]));
   CloseFile(mySetup);
 end;
 
@@ -906,6 +980,7 @@ begin
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox42.Checked:=true else Form.CheckBox42.Checked:=false;
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox1.ItemIndex := Form.Combobox1.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox45.ItemIndex := Form.Combobox45.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll])); Form1.ComboBox45Change(form1);
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
@@ -1024,6 +1099,30 @@ begin
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit17.Text:=ttext;
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     ttext:=sl2[sl2.Count-1]; ttext:=stringreplace(ttext,'€€€',' ',[rfReplaceAll]); Form.Edit19.Text:=ttext;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox8.Checked:=true else Form.CheckBox8.Checked:=false;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox9.Checked:=true else Form.CheckBox9.Checked:=false;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox10.Checked:=true else Form.CheckBox10.Checked:=false;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox11.Checked:=true else Form.CheckBox11.Checked:=false;
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit110.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit111.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit112.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit113.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox6.ItemIndex := Form.Combobox6.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox7.ItemIndex := Form.Combobox7.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox8.ItemIndex := Form.Combobox8.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox9.ItemIndex := Form.Combobox9.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
   except
     file_korrupt:=true;
   end;
@@ -1530,11 +1629,8 @@ end;end;
 procedure TForm1.FormCreate(Sender: TObject);
 var i,buttonSelected: integer;
 begin
-
-Combobox4.DropDownCount := Combobox4.Items.Count;
-
-Combobox5.DropDownCount := Combobox5.Items.Count;
-
+  Combobox4.DropDownCount := Combobox4.Items.Count;
+  Combobox5.DropDownCount := Combobox5.Items.Count;
   BitBtn3.Enabled:=false;
   BitBtn1.Enabled:=true;
   BitBtn2.Enabled:=false;
@@ -1603,7 +1699,7 @@ Combobox5.DropDownCount := Combobox5.Items.Count;
   end;
   laden(Form1, pfad+'settings\standard.rzt');
  	Rezeptname:= 'noname';
-  form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
   application.Title:= Edit7.Text + ' - ' + floattostr(round(floattemp)) +'°C - ' + 'Start';
   CloseFile(myFile);
   StartUDP;
@@ -1737,7 +1833,7 @@ begin
     if DeleteFile(SaveDialog1.FileName) then MyMessageDlgPos('Rezept wurde überschrieben!', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
     speichern(Form1, SaveDialog1.FileName);
   	Rezeptname := changefileext(ExtractFileName(SaveDialog1.FileName),'');
-    form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+    form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
     CloseFile(myFile);
   end;
 end;
@@ -1750,7 +1846,7 @@ begin
   begin
     laden(Form1, OpenDialog1.FileName);
   	Rezeptname := changefileext(ExtractFileName(OpenDialog1.FileName),'');
-    form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+    form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
     CloseFile(myFile);
   end;
   if ladefehler=true then
@@ -1758,7 +1854,7 @@ begin
     MyMessageDlgPos('Rezept-Datei ist beschädigt! Lade Standard-Rezept', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
     laden(Form1, pfad+'settings\standard.rzt');
   	Rezeptname:= 'noname';
-    form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+    form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
     CloseFile(myFile);
   end;
  RastEinlesen(stringgrid1.Row);
@@ -1832,7 +1928,7 @@ begin
   SetLength(RecText, AData.Size);
   AData.ReadBuffer(PChar(RecText)^, AData.Size);
   DecimalSeparator := '.';
-  if (RecText[1]='T') and ((RecText[6]='t') or (RecText[6]='p') or (RecText[6]='s') or (RecText[6]='e')) then
+  if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[6]='t') or (RecText[6]='p') or (RecText[6]='s') or (RecText[6]='e')) then
   begin
     SensorUeberwachungTimer.Enabled:=false;
     if (RecText[6]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
@@ -2031,6 +2127,7 @@ end;
 
 procedure TForm1.BitBtn1Click(Sender: TObject);
 begin
+  if checkbox6.checked=true then HendiTimer.Enabled:=true;
   Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-aktiv.bmp');
   BitBtn1.Enabled:=false;
   BitBtn8.Enabled:=false;
@@ -2102,12 +2199,14 @@ var buttonSelected,i:integer;
 begin
   if (stop = false) or (timertimer.Enabled = true) then
   begin
-    if (timertimer.enabled=false) and (AutoCommand=false) then
+    if (timertimer.enabled=false) and (AutoCommand=false) and (RastCount<>9999) then
     begin
       buttonSelected:=MyMessageDlgPos('Brauvorgang wirklich beenden?', mtWarning, [mbOK, mbAbort], ['Ok', 'Abbruch'], Form1.Left, 350, Form1.Top, 250);
-      if buttonSelected = mrOK then else exit;
+      if buttonSelected = mrOK then AutoCommand:=true else exit;
     end;
     Stringgrid1.Top:=170; Stringgrid1.Height:=383;
+    HendiTimer.Enabled:=false;
+    HendiBreakTimer.Enabled:=false;
     BitBtn3.Enabled:=false;
     BitBtn8.Enabled:=true;
     BitBtn1.Enabled:=true;
@@ -2212,24 +2311,9 @@ begin
     Memo1.Lines.Append('');
     Memo1.Lines.Strings[Memo1.Lines.Count-1]:='IP antwortet nicht';
   end;
-  for i:= 0 to 3 do
-  begin
-    if i=0 then if Heizung<>0 then xml:='ON.xml' else xml:='OFF.xml';;
-    if i=1 then if Ruehrwerk<>0 then xml:='ON.xml' else xml:='OFF.xml';;
-    if i=2 then if Kuehlung<>0 then xml:='ON.xml' else xml:='OFF.xml';;
-    if i=3 then if Alarm<>0 then xml:='ON.xml' else xml:='OFF.xml';;
-    user:=(Form1.FindComponent('Edit' + IntToStr(101+i)) as TEdit).Text;
-    ip:=(Form1.FindComponent('Edit' + IntToStr(97+i)) as TEdit).Text;
-    password:=(Form1.FindComponent('Edit' + IntToStr(105+i)) as TEdit).Text;
-    if (Form1.FindComponent('CheckBox' + IntToStr(46+i)) as TCheckBox).Checked=true then
-    begin
-      xml2:='-d @'+xml+' http://'+user+':'+password+'@'+ip+':10000/smartplug.cgi';
-      ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml2),PChar(pfad+'curl'), SW_HIDE);
-      xml:='-d @'+xml+' -v http://'+ip+':10000/smartplug.cgi --digest -u '+user+':'+password;
-      ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
-    end;
-  end;
   SendeTimer.Enabled := true ;
+  WLANOut;
+  WLANOut_Tasmota;
 end;
 
 procedure TForm1.ComboBox54Change(Sender: TObject);
@@ -2362,13 +2446,13 @@ begin
     StringGrid1.Canvas.Brush.Color := RGB(152,251,152);
     StringGrid1.Canvas.FillRect(Rect);
     S := StringGrid1.Cells[ACol, ARow];
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if StringGrid1.Cells[ACol, ARow]='Nein' then begin
     StringGrid1.Canvas.Brush.Color := RGB(240,128,128);
     StringGrid1.Canvas.FillRect(Rect);
     S := StringGrid1.Cells[ACol, ARow];
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if StringGrid1.Cells[ACol, ARow]='Heizrast' then begin
     Image1.Picture.LoadFromFile(pfad + 'Graphics\feuer_kl.bmp');
@@ -2415,7 +2499,7 @@ begin
     Try SI := strtoint(S) except SI:=0; end;
     if SI>10 then
     begin
-      S:='ZF '+inttostr(strtoint(S)-10)+' OFF';
+      S:='ZF '+inttostr(SI-10)+' OFF';
       StringGrid1.Canvas.Brush.Color := RGB(240,128,128);
     end
     else if SI>0 then
@@ -2423,33 +2507,41 @@ begin
       S:='ZF '+S+' ON';
       StringGrid1.Canvas.Brush.Color := RGB(152,251,152);
     end
-    else S:='';
+    else S:=' ';
     StringGrid1.Canvas.FillRect(Rect);
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
+  end
+  else if (ACol=9) and (ARow>0) and (stop=false) then
+  begin
+    if Stringgrid1.Cells[8,ARow]='Ja' then
+      StringGrid1.Canvas.Brush.Color := RGB(152,251,152);
+    StringGrid1.Canvas.FillRect(Rect);
+    S := StringGrid1.Cells[ACol, ARow];
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if (ACol=2) and (ARow>0) then
   begin
     S := StringGrid1.Cells[ACol, ARow]+' °C';
     StringGrid1.Canvas.FillRect(Rect);
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if (ACol=3) and (ARow>0) then
   begin
     S := StringGrid1.Cells[ACol, ARow]+' min.';
     StringGrid1.Canvas.FillRect(Rect);
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if (ACol=12) and (ARow>0) then
   begin
     S := StringGrid1.Cells[ACol, ARow]+' min.';
     StringGrid1.Canvas.FillRect(Rect);
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end
   else if ((ACol=6) or (ACol=7)) and (ARow>0) then
   begin
     S := StringGrid1.Cells[ACol, ARow]+' sek.';
     StringGrid1.Canvas.FillRect(Rect);
-    StringGrid1.Canvas.TextOut(Rect.Left + 2, Rect.Top + 2, S);
+    StringGrid1.Canvas.TextRect(Rect, Rect.Left + 2, Rect.Top + 2, S);
   end;
 end;
 
@@ -2475,6 +2567,11 @@ end;
 procedure TForm1.Edit8Change(Sender: TObject);
 var i: integer;
 begin
+  if checkbox3.Checked=true then
+  begin
+    try Stringgrid1.ColWidths[10] := strtoint(Edit13.Text)-1 except stringgrid1.ColWidths[10] := 50; end;
+    try stringgrid1.ColWidths[11] := strtoint(Edit14.Text)-1 except stringgrid1.ColWidths[11] := 50; end;
+  end;
   if stop=true then
   begin
     if TEdit(Sender).Text='' then TEdit(Sender).Text:='0';
@@ -2485,8 +2582,6 @@ begin
     try stringgrid1.ColWidths[9] := strtoint(Edit12.Text)-1 except stringgrid1.ColWidths[9] := 50; end;
     if checkbox3.Checked=true then
     begin
-      try Stringgrid1.ColWidths[10] := strtoint(Edit13.Text)-1 except stringgrid1.ColWidths[10] := 50; end;
-      try stringgrid1.ColWidths[11] := strtoint(Edit14.Text)-1 except stringgrid1.ColWidths[11] := 50; end;
       Label5.Visible:=true;
       Label8.Visible:=true;
       Label14.Visible:=true;
@@ -2769,7 +2864,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'\','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'/','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,':','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
-  form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
   Pagecontrol1.TabIndex:=0;
 end;
 
@@ -2783,7 +2878,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'\','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'/','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,':','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
-  form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
   Pagecontrol1.TabIndex:=0;
 end;
 
@@ -2798,7 +2893,7 @@ begin
   Rezeptname:=stringreplace(Rezeptname,'\','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'/','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,':','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'*','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'?','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'"','',[rfReplaceAll]);
   Rezeptname:=stringreplace(Rezeptname,'<','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'>','',[rfReplaceAll]); Rezeptname:=stringreplace(Rezeptname,'|','',[rfReplaceAll]);
-  form1.Caption:='Brauerei '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
+  form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
   Pagecontrol1.TabIndex:=0;
 end;
 
@@ -2858,7 +2953,9 @@ begin with Form1 do begin
 end;end;
 procedure HeizungSchalten;
 begin with Form1 do begin
-  if Heizbedarf=true then
+  if HendiBreakTimer.Enabled=true then
+    Heizung:=0
+  else if Heizbedarf=true then
   begin
     if Heizstufealt<>Heizstufe then Heizcounter:=0;
     if Heizstufe=1 then
@@ -2914,8 +3011,8 @@ begin with Form1 do begin
   begin
     if (Rastcount<9000) and (Stringgrid1.cells[6,RastCount]<>'') and (Stringgrid1.cells[5,RastCount]<>'') then
     begin
-      Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10;
-      Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10;
+      try Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10; except end;
+      try Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10;  except end;
       if Stringgrid1.cells[5,RastCount]='Ja' then Ruehrbedarf:=true else Ruehrbedarf:=false;
     end
     else Ruehrbedarf:=false;
@@ -2924,8 +3021,8 @@ begin with Form1 do begin
   begin
     if Stringgrid1.cells[5,RastCount]='Ja' then
     begin
-      Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10;
-      Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10;
+      try Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10; except end;
+      try Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10; except end;
       ruehrbedarf:=false;
       if (heizbedarf=true) and (ruehrverzoegerung<verzoegerung) then begin ruehrverzoegerung:=ruehrverzoegerung+1; ruehrbedarf:=false; ruehrverzoegerung2:=0; end
       else if (heizbedarf=true) and (ruehrverzoegerung=verzoegerung) then ruehrbedarf:=true
@@ -3166,22 +3263,26 @@ end;
 procedure TForm1.BitBtn6Click(Sender: TObject);
 var sollzeit,restzeit:integer;
 begin
-  sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
-  restzeit := strtoint(StringGrid1.cells[12,RastCount])+1;
-  StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
-  zeit:=zeit+60000;
+  try
+    sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
+    restzeit := strtoint(StringGrid1.cells[12,RastCount])+1;
+    StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
+    zeit:=zeit+60000;
+   except end;
 end;
 
 procedure TForm1.BitBtn7Click(Sender: TObject);
 var sollzeit,restzeit:integer;
 begin
-  sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
-  restzeit := strtoint(StringGrid1.cells[12,RastCount])-1;
-  if Restzeit>=0 then
-  begin
-    StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
-    zeit:=zeit-60000;
-  end;
+  try
+    sollzeit := strtoint(StringGrid1.cells[3,RastCount]);
+    restzeit := strtoint(StringGrid1.cells[12,RastCount])-1;
+    if Restzeit>=0 then
+    begin
+      StringGrid1.cells[12,RastCount]:=inttostr(restzeit);
+      zeit:=zeit-60000;
+    end;
+  except end;
 end;
 
 procedure TForm1.BitBtn4Click(Sender: TObject);
@@ -3207,7 +3308,7 @@ begin
   pausezeit:=0;
   if rast=true then
     pausezeit:=-99999999
-  else
+  else if StringGrid1.cells[12,RastCount]<>'' then
   begin
     StringGrid1.cells[14,RastCount]:=FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
     ZFCheck(false);
@@ -3297,14 +3398,14 @@ end;
 
 procedure TForm1.HendiTimerTimer(Sender: TObject);
 begin
-  HendiBreak:=true;
   HendiBreakTimer.Enabled:=true;
+  HendiTimer.Enabled:=false;
 end;
 
 procedure TForm1.HendiBreakTimerTimer(Sender: TObject);
 begin
-  HendiBreak:=false;
   HendiBreakTimer.Enabled:=false;
+  HendiTimer.Enabled:=true;
 end;
 
 
@@ -3415,6 +3516,56 @@ begin
   BitBtn10.Enabled:=true;
   BitBtn13.Enabled:=true;
   Form1.panel7.Color:=rgb(240,128,128);
+end;
+
+procedure TForm1.ReadTasmotaTimer(Sender: TObject);
+var
+  get_url: string;
+  resp: TMemoryStream;
+  SL: TStringList;
+  IP:String;
+  StringStart,StringEnd:integer;
+begin
+  if Combobox1.ItemIndex>0 then
+  begin
+    DecimalSeparator := '.';
+    IP:=(Form1.FindComponent('Edit' + IntToStr(109+Combobox1.ItemIndex)) as TEdit).Text;
+    get_url := 'http://'+IP+'/cm?cmnd=status%2010';
+    resp := TMemoryStream.Create;
+    SL := TStringList.Create;
+    try
+      try IdHTTP2.Get(get_url+'v', resp); Except end;
+      resp.Position := 0; // <-- add this!!
+      SL.LoadFromStream(resp);
+
+      Memo1.Lines.Append('');
+
+      StringStart := Pos('"Temperature":', SL.Text)+14;
+      StringEnd := Pos('"TempUnit', SL.Text)-2;
+
+      try
+        arduinotfs:= copy(SL.Text,StringStart,StringEnd-StringStart); arduinofloattemp:=strtofloat(arduinotfs);
+      arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
+      arduinofloattempalt:=arduinofloattemp;
+      if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
+      begin
+        Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
+      end
+      else
+      begin
+        Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('TASMOTA-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+      end;
+      if (checkbox33.Checked=true) and (start=true) then SensorUeberwachungTimer.Enabled:=true;
+      except
+        Memo1.Lines.Strings[Memo1.Lines.Count-1]:='TASMOTA-IN - kein gültiger Temperaturwert empfangen';
+
+      end;
+
+    finally
+      resp.Free;
+      SL.Free;
+    end;
+  end;
 end;
 
 end.
