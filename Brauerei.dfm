@@ -12221,6 +12221,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 4
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit98: TEdit
               Left = 102
@@ -12229,6 +12230,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 5
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit99: TEdit
               Left = 102
@@ -12237,6 +12239,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 6
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit100: TEdit
               Left = 102
@@ -12245,6 +12248,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 7
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit101: TEdit
               Left = 217
@@ -12416,6 +12420,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 4
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit111: TEdit
               Left = 102
@@ -12424,6 +12429,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 5
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit112: TEdit
               Left = 102
@@ -12432,6 +12438,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 6
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object Edit113: TEdit
               Left = 102
@@ -12440,6 +12447,7 @@ object Form1: TForm1
               Height = 23
               TabOrder = 7
               Text = '192.168.178.56'
+              OnKeyPress = Edit96KeyPress
             end
             object ComboBox6: TComboBox
               Left = 217
@@ -16046,7 +16054,7 @@ object Form1: TForm1
           end
           object GroupBox7: TGroupBox
             Left = 456
-            Top = 152
+            Top = 192
             Width = 417
             Height = 121
             Caption = 'Alarmparameter'
@@ -16091,26 +16099,26 @@ object Form1: TForm1
             Left = 456
             Top = 8
             Width = 417
-            Height = 129
+            Height = 177
             Caption = 'R'#252'hrwerkparameter'
             TabOrder = 1
             object Label154: TLabel
               Left = 20
-              Top = 86
+              Top = 102
               Width = 106
               Height = 15
               Caption = 'Ausschaltverz'#246'gert:'
             end
             object Label153: TLabel
               Left = 20
-              Top = 62
+              Top = 78
               Width = 103
               Height = 15
               Caption = 'Einschaltverz'#246'gert:'
             end
             object ComboBox45: TComboBox
               Left = 187
-              Top = 58
+              Top = 74
               Width = 105
               Height = 23
               Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
@@ -16131,7 +16139,7 @@ object Form1: TForm1
             end
             object ComboBox3: TComboBox
               Left = 187
-              Top = 82
+              Top = 98
               Width = 105
               Height = 23
               Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
@@ -16152,10 +16160,10 @@ object Form1: TForm1
             end
             object CheckBox42: TCheckBox
               Left = 19
-              Top = 35
-              Width = 281
+              Top = 27
+              Width = 374
               Height = 17
-              Caption = 'R'#252'hrwerk an Heizung koppeln'
+              Caption = 'R'#252'hrwerk gepulst an Heizung koppeln, sonst R'#252'hrwerk aus'
               Font.Charset = DEFAULT_CHARSET
               Font.Color = clWindowText
               Font.Height = -12
@@ -16165,6 +16173,41 @@ object Form1: TForm1
               ParentShowHint = False
               ShowHint = True
               TabOrder = 0
+              OnClick = CheckBox42Click
+            end
+            object CheckBox43: TCheckBox
+              Left = 19
+              Top = 144
+              Width = 366
+              Height = 17
+              Caption = 'R'#252'hrwerk durchgehend AN in Aufheizphasen in Rasten pulsen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              OnClick = CheckBox43Click
+            end
+            object CheckBox45: TCheckBox
+              Left = 19
+              Top = 51
+              Width = 390
+              Height = 17
+              Caption = 'R'#252'hrwerk dauer AN an Heizung koppeln, sonst R'#252'hrwerk pulsen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 4
+              OnClick = CheckBox45Click
             end
           end
           object Button9: TButton
@@ -16429,6 +16472,13 @@ object Form1: TForm1
         Width = 153
         Height = 25
         TabOrder = 1
+      end
+      object Edit15: TEdit
+        Left = 712
+        Top = 42
+        Width = 153
+        Height = 23
+        TabOrder = 2
       end
     end
   end

@@ -353,6 +353,9 @@ type
     ComboBox7: TComboBox;
     ComboBox8: TComboBox;
     ComboBox9: TComboBox;
+    CheckBox43: TCheckBox;
+    Edit15: TEdit;
+    CheckBox45: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -465,6 +468,9 @@ type
     procedure BitBtn13Click(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure ReadTasmotaTimer(Sender: TObject);
+    procedure CheckBox43Click(Sender: TObject);
+    procedure CheckBox42Click(Sender: TObject);
+    procedure CheckBox45Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -479,7 +485,7 @@ var
   Rezeptname,Pfad,Pfad2,KBHDBPfad,RecText,arduinotfs,rastart,logname: String;
   ladefehler,pause,start,stop,file_korrupt,Rast,Brauerruf,Heizbedarf,
   Ruehrbedarf,Kuehlungbedarf,Alarmbedarf,Hendibreak,FehlerErkannt,
-  ManualMoved,AutoCommand: boolean;
+  ManualMoved,AutoCommand,HSwitch,RSwitch,KSwitch,ASwitch: boolean;
   arduinofloattempalt,arduinofloattemp,arduinotempdelta, floattemp,
   ptime,atime,htime,rtime,gtime,kwert,kfaktor,Gradient,storetempon,
   storetempoff: Extended;
@@ -489,14 +495,16 @@ var
   Ruehrpulsalt,Ruehrpausealt,Ruehrcounter,Ruehrpuls,Ruehrpause,
   Alarmpulsalt,Alarmpausealt,alarmcounter,Alarmpuls,Alarmpause,
   Countlines,Alarmpausezaehler,verzoegerung,verzoegerung2,ruehrverzoegerung,
-  ruehrverzoegerung2: integer;
+  ruehrverzoegerung2,HeizungAlt,RuehrwerkAlt,KuehlungAlt,AlarmAlt,
+  HCount,RCount,KCount,ACount : integer;
   Gradientgetter: Array[1..120] of Extended;
   funktionsinfo: Array [1..10] of Boolean;
   sl,sl2: TStringList;
 
 const
-  Version = 'V 2.0';
-
+  Version = 'V 2.01 Trial';
+  Buildno = '02010001';
+  
 implementation
 
 {$R *.dfm}
@@ -531,7 +539,7 @@ begin
   Result := aMsgDlg.ShowModal;
 end;
 
-function MyMessageDlgPos(const Msg: string; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; Captions: array of string; xPosForm, xPosMessage, yPosForm, yPosMessage: Integer ): Integer;
+function MyMessageDlgPos(const Msg: string; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; xPosForm, xPosMessage, yPosForm, yPosMessage: Integer ): Integer;
 var
   aMsgDlg: TForm;
 begin
@@ -556,7 +564,7 @@ begin with Form1 do begin
   except
   end;
 end; end;
-  
+
 procedure ClearStringGrid1;
 var
   c, r: Integer;
@@ -624,22 +632,39 @@ begin
   if (Intdummy>max) or (Intdummy<min) then begin changededit.Text:=fail; MyShowMessagePos('Unerlaubte Wert!', Form1.Left, 350, Form1.Top, 250); end;
 end;
 
+procedure WLAN_SwitchCheck;
+begin
+  if Heizung<>HeizungAlt then HCount:=0 else if HCount<8 then HCount:=HCount+1 else HCount:=3;
+  if (HCount=0) or (HCount=2) or (HCount=7) then HSwitch:=true else HSwitch:=false;
+  HeizungAlt:=Heizung;
+  if Ruehrwerk<>RuehrwerkAlt then RCount:=0 else if RCount<8 then RCount:=RCount+1 else RCount:=3;
+  if (RCount=0) or (RCount=2) or (RCount=7) then RSwitch:=true else RSwitch:=false;
+  RuehrwerkAlt:=Ruehrwerk;
+  if Kuehlung<>KuehlungAlt then KCount:=0 else if KCount<8 then KCount:=KCount+1 else KCount:=3;
+  if (KCount=0) or (KCount=2) or (KCount=7) then KSwitch:=true else KSwitch:=false;
+  KuehlungAlt:=Kuehlung;
+  if Alarm<>AlarmAlt then ACount:=0 else if ACount<8 then ACount:=ACount+1 else ACount:=3;
+  if (ACount=0) or (ACount=2) or (ACount=7) then ASwitch:=true else ASwitch:=false;
+  AlarmAlt:=Alarm;
+end;
+
 procedure WLANOut_Tasmota;
 var xml,xml2,user,password,ip: string;
 begin
   if Heizung<>0 then xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20Off';
-  if Form1.CheckBox8.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if (Form1.CheckBox8.Checked=true) and (HSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
   if Ruehrwerk<>0 then xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20Off';
-  if Form1.CheckBox9.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if (Form1.CheckBox9.Checked=true) and (RSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
   if Kuehlung<>0 then  xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20Off';
-  if Form1.CheckBox10.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if (Form1.CheckBox10.Checked=true) and (KSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
   if Alarm<>0 then  xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20Off';
-  if Form1.CheckBox11.Checked=true then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if (Form1.CheckBox11.Checked=true) and (ASwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
 end;
 
 procedure WLANOut;
 var
   i: integer;
+  Switch:boolean;
   xml,xml2,user,password,ip: string;
 begin
   for i:= 0 to 3 do
@@ -648,10 +673,14 @@ begin
     if i=1 then if Ruehrwerk<>0 then xml:='ON.xml' else xml:='OFF.xml';;
     if i=2 then if Kuehlung<>0 then xml:='ON.xml' else xml:='OFF.xml';;
     if i=3 then if Alarm<>0 then xml:='ON.xml' else xml:='OFF.xml';;
+    if i=0 then Switch:=HSwitch;
+    if i=1 then Switch:=RSwitch;
+    if i=2 then Switch:=KSwitch;
+    if i=3 then Switch:=ASwitch;
     user:=(Form1.FindComponent('Edit' + IntToStr(101+i)) as TEdit).Text;
     ip:=(Form1.FindComponent('Edit' + IntToStr(97+i)) as TEdit).Text;
     password:=(Form1.FindComponent('Edit' + IntToStr(105+i)) as TEdit).Text;
-    if (Form1.FindComponent('CheckBox' + IntToStr(46+i)) as TCheckBox).Checked=true then
+    if ((Form1.FindComponent('CheckBox' + IntToStr(46+i)) as TCheckBox).Checked=true) and (Switch=true) then
     begin
       xml2:='-d @'+xml+' http://'+user+':'+password+'@'+ip+':10000/smartplug.cgi';
       ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml2),PChar(pfad+'curl'), SW_HIDE);
@@ -785,7 +814,7 @@ end;end;
 procedure SetTemp;
 begin with Form1 do begin
   if Button13.Caption='Simulation' then floattemp:=arduinofloattemp*kfaktor+kwert else floattemp:=ScrollBar2.Position/10;
-  panel1.Caption:=FloatToStrF(floattemp, ffFixed, 3, 1)+' °C';
+  panel1.Caption:=FloatToStrF(floattemp, ffFixed, 4, 1)+' °C';
 end;end;
 
 procedure setup_speichern(Form:TForm1; filename:string);
@@ -807,15 +836,15 @@ begin
   WriteLn(mySetup,'Ausschaltpuls bis 100°C;'+Form.ComboBox23.Text);
   WriteLn(mySetup,'Überschwingungsdämpfung;'+Form.ComboBox25.Text);
   WriteLn(mySetup,'Schalthysterese Heizung;'+Form.ComboBox26.Text);
-  WriteLn(mySetup,'NO LONGER USED;1');
+  if Form.CheckBox45.Checked=true then WriteLn(mySetup,'Rührwerk mit Heizung koppeln sonst puls;1') else WriteLn(mySetup,'Rührwerk mit Heizung koppeln sonst puls;0');
   WriteLn(mySetup,'Schalthysterese Kühlung;'+Form.ComboBox29.Text);
   WriteLn(mySetup,'Pulstemperatur Stufe 1;'+Form.Edit83.Text);
   WriteLn(mySetup,'Pulstemperatur Stufe 2;'+Form.Edit84.Text);
   WriteLn(mySetup,'Pulstemperatur Stufe 3;'+Form.Edit85.Text);
   WriteLn(mySetup,'Pulstemperatur Stufe 4;'+Form.Edit86.Text);
-  WriteLn(mySetup,'NO LONGER USED;2');
+  if Form.CheckBox43.Checked=true then WriteLn(mySetup,'Rührwerk in Heizungphasen AN;1') else WriteLn(mySetup,'Rührwerk in Heizungphasen AN;0');
   if Form.CheckBox32.Checked=true then WriteLn(mySetup,'Log-Datei schreiben;1') else WriteLn(mySetup,'Log-Datei schreiben;0');
-  if Form.CheckBox42.Checked=true then WriteLn(mySetup,'Rührwerk mit Heizung koppeln;1') else WriteLn(mySetup,'Rührwerk mit Heizung koppeln;0');
+  if Form.CheckBox42.Checked=true then WriteLn(mySetup,'Rührwerk mit Heizung koppeln sonst aus;1') else WriteLn(mySetup,'Rührwerk mit Heizung koppeln sonst aus;0');
   WriteLn(mySetup,'Temperaturmessungs-Device;'+stringreplace(Form.ComboBox1.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Rührwerk-Zeitabstand1;'+stringreplace(Form.ComboBox45.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Rührwerk-Zeitabstand2;'+stringreplace(Form.ComboBox3.Text,' ','€€€',[rfReplaceAll]));
@@ -964,6 +993,7 @@ begin
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox26.ItemIndex := Form.Combobox26.Items.IndexOf(sl2[sl2.Count-1]);
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox45.Checked:=true else Form.CheckBox45.Checked:=false;
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox29.ItemIndex := Form.Combobox29.Items.IndexOf(sl2[sl2.Count-1]);
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
@@ -975,6 +1005,7 @@ begin
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Edit86.Text:=sl2[sl2.Count-1];
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    if sl2[sl2.Count-1]='1' then Form.CheckBox43.Checked:=true else Form.CheckBox43.Checked:=false;
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     if sl2[sl2.Count-1]='1' then Form.CheckBox32.Checked:=true else Form.CheckBox32.Checked:=false;
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
@@ -1180,7 +1211,7 @@ begin with Form1 do begin
           memMaisch.Text := 'Einmaischen - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['EinmaischenTemp']))+chr(176)+'C - 0 min.';
         end;
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
       sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID));
       try
@@ -1197,7 +1228,7 @@ begin with Form1 do begin
           end;
         end;
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
       // *** Hopfengaben aus DB lesen ***
       memMaisch.Lines.Add('');
@@ -1210,7 +1241,7 @@ begin with Form1 do begin
         memMaisch.Lines.Add('Gesamtkochdauer - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']))+' min.');
         gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']));
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
       sltb := slDb.GetTable('SELECT * FROM Hopfengaben WHERE SudID = '+inttostr(ID));
       vwh:=false;
@@ -1235,7 +1266,7 @@ begin with Form1 do begin
           end;
         end;
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
       sltb := slDb.GetTable('SELECT * FROM Hopfengaben ORDER BY Zeit DESC');
       try
@@ -1257,7 +1288,7 @@ begin with Form1 do begin
           end;
         end;
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
     // *** Ende Hopfengaben aus DB lesen ***
       memMaisch.Lines.Add('');
@@ -1267,7 +1298,7 @@ begin with Form1 do begin
         if sltb.FieldAsDouble(sltb.FieldIndex['Nachisomerisierungszeit']) <> 0 then
         memMaisch.Lines.Add('Nachisomerisierungszeit - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['Nachisomerisierungszeit']))+' min.');
       except
-        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+        MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
     end;
   finally
@@ -1302,7 +1333,7 @@ begin with Form1 do begin
         ID := sltb.FieldAsInteger(sltb.FieldIndex['ID']);
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID));
     try
@@ -1317,7 +1348,7 @@ begin with Form1 do begin
         end;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     for i := 1 to Stringgrid1.RowCount-1 do
     begin
@@ -1350,7 +1381,7 @@ begin with Form1 do begin
         end;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
   finally
     sltb.Free;
@@ -1381,7 +1412,7 @@ begin with Form1 do begin
       gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']));
       Nachiso := sltb.FieldAsDouble(sltb.FieldIndex['Nachisomerisierungszeit']);
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     sltb := slDb.GetTable('SELECT * FROM Hopfengaben WHERE SudID = '+ebID.Text);
     try
@@ -1403,7 +1434,7 @@ begin with Form1 do begin
         end;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     k:=-1;
     sltb := slDb.GetTable('SELECT * FROM Hopfengaben ORDER BY Zeit DESC');
@@ -1429,7 +1460,7 @@ begin with Form1 do begin
         end;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     if k<0 then k:=0;
     if k<gk then
@@ -1469,7 +1500,7 @@ begin with Form1 do begin
         end;
       end
      except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     if (Nachiso<>0) then
     begin
@@ -1504,7 +1535,7 @@ begin with Form1 do begin
         if c>0 then Stringgrid1.Cells[9,start] := Tempstr;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     k:=-1;
     Tempstr:='';
@@ -1534,7 +1565,7 @@ begin with Form1 do begin
         c:=c+1;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     if hc=0 then c:=c-1;
     if rkc=1 then Stringgrid1.Cells[1,start+c] := 'Restkochzeit';
@@ -1568,7 +1599,7 @@ begin with Form1 do begin
         if (novw=1) and (ihc<>0) then begin Stringgrid1.Cells[9,start+vwc+hc+rkc+ihc-1] := Tempstr; c:=c+1; end;
       end;
     except
-      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
     if ric = 1 then Stringgrid1.Cells[9,Stringgrid1.Rowcount-1] := 'Nachisomerisierungszeit abgeschlossen';
     if vwc=1 then Stringgrid1.Cells[1,start] := 'Vorderwürze';
@@ -1626,6 +1657,19 @@ begin with Form1 do begin
   end;
 end;end;
 
+procedure autopositioncheck;
+var i,buttonSelected: integer;
+begin with Form1 do begin
+  if (Button4.Caption<>'Automatik') or (Button5.Caption<>'Automatik') or (Button6.Caption<>'Automatik') or (Button7.Caption<>'Automatik') then
+  begin
+    buttonSelected:=MyMessageDlgPos('Nicht alle Relais auf Automatik-Betrieb! Automatik aktivieren?', mtInformation, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+    if buttonSelected = mrYes then
+    begin
+      Button4.Caption:='Automatik'; Button5.Caption:='Automatik'; Button6.Caption:='Automatik'; Button7.Caption:='Automatik';
+    end;
+  end;
+end;end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var i,buttonSelected: integer;
 begin
@@ -1653,11 +1697,11 @@ begin
   Form1.Top:=20;
   Application.HintHidePause:= 3000;
   Form1.Left:=20;
-  pfad:=ExtractFilePath(ParamStr(0));
+  pfad:=ExtractFilePath(ParamStr(0));  
+  KBHSettingsLaden;
   OpenDialog1.InitialDir:=pfad+'Rezepte';
   SaveDialog1.InitialDir:=pfad+'Rezepte';
   setup_laden(Form1, pfad+'Setup\Setup.txt');
-  KBHSettingsLaden;
   panel8.Color:=rgb(152,251,152);
   panel9.Color:=rgb(240,128,128);
   if file_korrupt=false then
@@ -1666,8 +1710,8 @@ begin
     CopyFile(PChar(pfad+'Setup\Setup.txt'),PChar(pfad+'Setup\Save.txt'),true);
   end
   else
-  buttonSelected:=MyMessageDlgPos('Einstellungen korrupt, letzter sicherer Stand wieder herstellen?', mtInformation, [mbOK, mbAbort], ['Ja', 'Nein'], Form1.Left, 350, Form1.Top, 250);
-  if buttonSelected = mrAbort then application.terminate
+  buttonSelected:=MyMessageDlgPos('Einstellungen korrupt, letzter sicherer Stand wieder herstellen?', mtInformation, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+  if buttonSelected = mrNO then application.terminate
   else
   begin
     DeleteFile(PChar(pfad+'Setup\Setup.txt'));
@@ -1712,15 +1756,17 @@ begin
       else
       begin
         Memo2.Text:='Version nicht aktuell';
-        buttonSelected:=MyMessageDlgPos('Neue Version verfügbar! Zur Downloadseite wechseln?', mtInformation, [mbOK, mbAbort], ['Ja', 'Nein'], Form1.Left, 350, Form1.Top, 250);
-        if buttonSelected = mrOK then ShellExecute(Handle, 'open', 'http://www.schopfschoppe.de/Download.html', nil, nil, SW_SHOWNORMAL);
+        buttonSelected:=MyMessageDlgPos('Neue Version verfügbar! Zur Downloadseite wechseln?', mtInformation, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+        if buttonSelected = mrYES then ShellExecute(Handle, 'open', 'http://www.schopfschoppe.de/Download.html', nil, nil, SW_SHOWNORMAL);
       end;
     except
-      MyMessageDlgPos('www.schopfschoppe.de nicht erreichbar!', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+      MyMessageDlgPos('www.schopfschoppe.de nicht erreichbar!', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
   end
   else
   Memo2.Text:='Versionsprüfung aus';
+  Edit15.ReadOnly := true;
+  Edit15.Text:=' Buildno.: '+Buildno;
   Edit21Change(Form1);
   RastEinlesen(stringgrid1.Row);
 end;
@@ -1827,10 +1873,11 @@ procedure TForm1.Edit2Change(Sender: TObject); begin if TEdit(Sender).Text='' th
 
 procedure TForm1.BitBtn9Click(Sender: TObject);
 begin
+  SaveDialog1.InitialDir:=pfad+'Rezepte';
   SaveDialog1.FileName:=Rezeptname+'.rzt';
   if SaveDialog1.Execute then
   begin
-    if DeleteFile(SaveDialog1.FileName) then MyMessageDlgPos('Rezept wurde überschrieben!', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+    if DeleteFile(SaveDialog1.FileName) then MyMessageDlgPos('Rezept wurde überschrieben!', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     speichern(Form1, SaveDialog1.FileName);
   	Rezeptname := changefileext(ExtractFileName(SaveDialog1.FileName),'');
     form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
@@ -1840,7 +1887,8 @@ end;
 
 procedure TForm1.BitBtn8Click(Sender: TObject);
 var buttonSelected:integer;
-begin
+begin                                    
+  OpenDialog1.InitialDir:=pfad+'Rezepte';
   OpenDialog1.FileName:='test.rzt';
   if OpenDialog1.Execute then
   begin
@@ -1851,7 +1899,7 @@ begin
   end;
   if ladefehler=true then
   begin
-    MyMessageDlgPos('Rezept-Datei ist beschädigt! Lade Standard-Rezept', mtInformation, [mbOK], ['Ok'], Form1.Left, 350, Form1.Top, 250);
+    MyMessageDlgPos('Rezept-Datei ist beschädigt! Lade Standard-Rezept', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     laden(Form1, pfad+'settings\standard.rzt');
   	Rezeptname:= 'noname';
     form1.Caption:='Brauerei2WiFi '+ Version + ' - ' + Edit7.Text + ' - ' +  Rezeptname; //Ausgabe des gespeicherten Rezepts
@@ -1910,8 +1958,8 @@ var i,j,markierung,buttonSelected : integer;
 begin
   if   stringgrid1.RowCount>2 then
   begin
-    buttonSelected:=MyMessageDlgPos('Rast unwiderruflich löschen?', mtInformation, [mbOK, mbAbort], ['Ja', 'Nein'], Form1.Left, 350, Form1.Top, 250);
-    if buttonSelected = mrOK then
+    buttonSelected:=MyMessageDlgPos('Rast unwiderruflich löschen?', mtInformation, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+    if buttonSelected = mrYES then
     begin
       markierung:=stringgrid1.Row;
       for i := markierung+1 to stringgrid1.RowCount do for j:= 1 to 9 do stringgrid1.cells[j,i-1]:=stringgrid1.cells[j,i];
@@ -1928,6 +1976,30 @@ begin
   SetLength(RecText, AData.Size);
   AData.ReadBuffer(PChar(RecText)^, AData.Size);
   DecimalSeparator := '.';
+  if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[5]='t') or (RecText[5]='p') or (RecText[5]='s') or (RecText[5]='e')) then
+  begin
+    SensorUeberwachungTimer.Enabled:=false;
+    if (RecText[5]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
+    if (RecText[5]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
+    if (RecText[5]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
+    Memo1.Lines.Append('');
+    arduinofloattempalt:=arduinofloattemp;
+    try arduinotfs:= copy(RecText, 2, 3); arduinofloattemp:=strtofloat(arduinotfs); except end;
+    arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
+    if (arduinofloattemp=9999) then
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Arduinoschaltbefehl empfangen';
+      arduinofloattemp:=arduinofloattempalt;
+    end
+    else if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
+    end
+    else
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+    end;
+  end;
   if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[6]='t') or (RecText[6]='p') or (RecText[6]='s') or (RecText[6]='e')) then
   begin
     SensorUeberwachungTimer.Enabled:=false;
@@ -1937,6 +2009,30 @@ begin
     Memo1.Lines.Append('');
     arduinofloattempalt:=arduinofloattemp;
     try arduinotfs:= copy(RecText, 2, 4); arduinofloattemp:=strtofloat(arduinotfs); except end;
+    arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
+    if (arduinofloattemp=9999) then
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Arduinoschaltbefehl empfangen';
+      arduinofloattemp:=arduinofloattempalt;
+    end
+    else if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
+    end
+    else
+    begin
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+    end;
+  end;
+  if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[7]='t') or (RecText[7]='p') or (RecText[7]='s') or (RecText[7]='e')) then
+  begin
+    SensorUeberwachungTimer.Enabled:=false;
+    if (RecText[7]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
+    if (RecText[7]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
+    if (RecText[7]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
+    Memo1.Lines.Append('');
+    arduinofloattempalt:=arduinofloattemp;
+    try arduinotfs:= copy(RecText, 2, 5); arduinofloattemp:=strtofloat(arduinotfs); except end;
     arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
     if (arduinofloattemp=9999) then
     begin
@@ -2167,6 +2263,7 @@ begin
   start:=true;
   pause:=false;
   stop:=false;
+  if Label136.Visible=false then autopositioncheck;
 end;
 
 procedure TForm1.BitBtn2Click(Sender: TObject);
@@ -2201,8 +2298,8 @@ begin
   begin
     if (timertimer.enabled=false) and (AutoCommand=false) and (RastCount<>9999) then
     begin
-      buttonSelected:=MyMessageDlgPos('Brauvorgang wirklich beenden?', mtWarning, [mbOK, mbAbort], ['Ok', 'Abbruch'], Form1.Left, 350, Form1.Top, 250);
-      if buttonSelected = mrOK then AutoCommand:=true else exit;
+      buttonSelected:=MyMessageDlgPos('Brauvorgang wirklich beenden?', mtWarning, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+      if buttonSelected = mrYES then AutoCommand:=true else exit;
     end;
     Stringgrid1.Top:=170; Stringgrid1.Height:=383;
     HendiTimer.Enabled:=false;
@@ -2312,6 +2409,7 @@ begin
     Memo1.Lines.Strings[Memo1.Lines.Count-1]:='IP antwortet nicht';
   end;
   SendeTimer.Enabled := true ;
+  WLAN_SwitchCheck;
   WLANOut;
   WLANOut_Tasmota;
 end;
@@ -2551,8 +2649,8 @@ procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var buttonSelected:integer;
     hw:hwnd;
 begin
-  buttonSelected:=MyMessageDlgPos('Programm wirklich beenden?', mtWarning, [mbOK, mbAbort], ['Ok', 'Abbruch'], Form1.Left, 350, Form1.Top, 250);
-  if buttonSelected = mrOK then
+  buttonSelected:=MyMessageDlgPos('Programm wirklich beenden?', mtWarning, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+  if buttonSelected = mrYES then
   begin
     Ruehrwerk:=0;
     Heizung:=0;
@@ -3007,7 +3105,43 @@ end;end;
 
 procedure RuehrwerkBedarfsermittlung;
 begin with Form1 do begin
-  if checkbox42.checked=false then
+  if checkbox42.checked=true then
+  begin
+    if Stringgrid1.cells[5,RastCount]='Ja' then
+    begin
+      try Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10; except end;
+      try Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10; except end;
+      ruehrbedarf:=false;
+      if (heizbedarf=true) and (ruehrverzoegerung<verzoegerung) then begin ruehrverzoegerung:=ruehrverzoegerung+1; ruehrbedarf:=false; ruehrverzoegerung2:=0; end
+      else if (heizbedarf=true) and (ruehrverzoegerung=verzoegerung) then begin ruehrbedarf:=true; ruehrverzoegerung2:=0; end
+      else if (heizbedarf=false) and (ruehrverzoegerung2<verzoegerung2) then begin ruehrverzoegerung2:=ruehrverzoegerung2+1; ruehrbedarf:=true; ruehrverzoegerung:=0; end
+      else if (heizbedarf=false) and (ruehrverzoegerung2=verzoegerung2) then begin ruehrbedarf:=false; ruehrverzoegerung:=0; end;
+    end;
+  end
+  else if checkbox45.checked=true then
+  begin
+    if Stringgrid1.cells[5,RastCount]='Ja' then
+    begin
+      try Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10; except end;
+      try Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10; except end;
+      ruehrbedarf:=false;
+      if (heizbedarf=true) and (ruehrverzoegerung<verzoegerung) then begin ruehrverzoegerung:=ruehrverzoegerung+1; ruehrverzoegerung2:=0; end
+      else if (heizbedarf=true) and (ruehrverzoegerung=verzoegerung) then begin ruehrbedarf:=true; ruehrverzoegerung2:=0; Ruehrpuls:=999999; Ruehrpause:=0; end
+      else if (heizbedarf=false) and (ruehrverzoegerung2<verzoegerung2) then begin ruehrverzoegerung2:=ruehrverzoegerung2+1; ruehrbedarf:=true; ruehrverzoegerung:=0; Ruehrpuls:=999999; Ruehrpause:=0; end
+      else if (heizbedarf=false) and (ruehrverzoegerung2=verzoegerung2) then begin ruehrbedarf:=true; ruehrverzoegerung:=0; end;
+    end;
+  end
+  else if (checkbox43.checked=true) and (Stringgrid1.cells[14,RastCount]='') then
+  begin
+    if (Rastcount<9000) and (Stringgrid1.cells[6,RastCount]<>'') and (Stringgrid1.cells[5,RastCount]<>'') then
+    begin
+      Ruehrpuls:=999999;
+      Ruehrpause:=0;
+      if Stringgrid1.cells[5,RastCount]='Ja' then Ruehrbedarf:=true else Ruehrbedarf:=false;
+    end
+    else Ruehrbedarf:=false;
+  end
+  else
   begin
     if (Rastcount<9000) and (Stringgrid1.cells[6,RastCount]<>'') and (Stringgrid1.cells[5,RastCount]<>'') then
     begin
@@ -3016,19 +3150,6 @@ begin with Form1 do begin
       if Stringgrid1.cells[5,RastCount]='Ja' then Ruehrbedarf:=true else Ruehrbedarf:=false;
     end
     else Ruehrbedarf:=false;
-  end
-  else
-  begin
-    if Stringgrid1.cells[5,RastCount]='Ja' then
-    begin
-      try Ruehrpuls:=strtoint(Stringgrid1.cells[7,RastCount])*10; except end;
-      try Ruehrpause:=strtoint(Stringgrid1.cells[6,RastCount])*10; except end;
-      ruehrbedarf:=false;
-      if (heizbedarf=true) and (ruehrverzoegerung<verzoegerung) then begin ruehrverzoegerung:=ruehrverzoegerung+1; ruehrbedarf:=false; ruehrverzoegerung2:=0; end
-      else if (heizbedarf=true) and (ruehrverzoegerung=verzoegerung) then ruehrbedarf:=true
-      else if (heizbedarf=false) and (ruehrverzoegerung2<verzoegerung2) then begin ruehrverzoegerung2:=ruehrverzoegerung2+1; ruehrbedarf:=true; ruehrverzoegerung:=0; end
-      else if (heizbedarf=false) and (ruehrverzoegerung2=verzoegerung2) then ruehrbedarf:=false;
-    end;
   end;
 end;end;
 procedure RuehrwerkSchalten;
@@ -3251,8 +3372,7 @@ begin
   end;
   panel8.Top:=300;
   Brauerruf:=false;
-  if (Button4.Caption<>'Automatik') or (Button5.Caption<>'Automatik') or (Button6.Caption<>'Automatik') or (Button7.Caption<>'Automatik')
-    then MyShowMessagePos('Nicht alle Relais auf Automatik-Betrieb!', Form1.Left, 350, Form1.Top, 250);
+  autopositioncheck;
 end;
 
 procedure TForm1.UpDown2Click(Sender: TObject; Button: TUDBtnType);
@@ -3342,6 +3462,7 @@ begin with Form1 do begin
     Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-timer.bmp');
     Stringgrid1.Top:=170; Stringgrid1.Height:=383;
     Panel3.Visible:=false;
+    autopositioncheck;
   end
   else
   begin
@@ -3413,8 +3534,8 @@ procedure TForm1.Button9Click(Sender: TObject);
 var
   buttonSelected:integer;
 begin
-  buttonSelected:=MyMessageDlgPos('Einstellungen auf Standardeinstellungen zurücksetzen?', mtWarning, [mbOK, mbAbort], ['Ok', 'Abbruch'], Form1.Left, 350, Form1.Top, 250);
-  if buttonSelected = mrOK then
+  buttonSelected:=MyMessageDlgPos('Einstellungen auf Standardeinstellungen zurücksetzen?', mtWarning, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+  if buttonSelected = mrYES then
   begin
     setup_laden(Form1, pfad+'Setup\Standard_Setup.txt');
     Form1.PageControl1Change(Sender);
@@ -3498,8 +3619,7 @@ procedure TForm1.StringGrid1MouseUp(Sender: TObject; Button: TMouseButton; Shift
 
 procedure TForm1.ComboBox36KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#48..#57]) then key:=#0; end;
 
-procedure TForm1.Edit96KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#46,#48..#57]) then key:=#0;
-end;
+procedure TForm1.Edit96KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#46,#48..#57]) then key:=#0; end;
 
 procedure TForm1.BitBtn13Click(Sender: TObject);
 begin
@@ -3545,27 +3665,31 @@ begin
 
       try
         arduinotfs:= copy(SL.Text,StringStart,StringEnd-StringStart); arduinofloattemp:=strtofloat(arduinotfs);
-      arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
-      arduinofloattempalt:=arduinofloattemp;
-      if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
-      begin
-        Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
-      end
-      else
-      begin
-        Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('TASMOTA-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
-      end;
-      if (checkbox33.Checked=true) and (start=true) then SensorUeberwachungTimer.Enabled:=true;
+        arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
+        arduinofloattempalt:=arduinofloattemp;
+        if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
+        begin
+          SensorUeberwachungTimer.Enabled:=false;
+          Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
+        end
+        else
+        begin
+          SensorUeberwachungTimer.Enabled:=false;
+          Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('TASMOTA-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+        end;
+        if (checkbox33.Checked=true) and (start=true) then SensorUeberwachungTimer.Enabled:=true;
       except
         Memo1.Lines.Strings[Memo1.Lines.Count-1]:='TASMOTA-IN - kein gültiger Temperaturwert empfangen';
-
       end;
-
     finally
       resp.Free;
       SL.Free;
     end;
   end;
 end;
+
+procedure TForm1.CheckBox43Click(Sender: TObject); begin if checkbox43.Checked=true then begin checkbox42.Checked:=false; checkbox45.Checked:=false; end; end;
+procedure TForm1.CheckBox42Click(Sender: TObject); begin if checkbox42.Checked=true then begin checkbox45.Checked:=false; checkbox43.Checked:=false; end; end;
+procedure TForm1.CheckBox45Click(Sender: TObject); begin if checkbox45.Checked=true then begin checkbox42.Checked:=false; checkbox43.Checked:=false; end; end;
 
 end.

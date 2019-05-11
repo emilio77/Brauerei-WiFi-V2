@@ -1,0 +1,14 @@
+V2.01
+- Abfrage Relais-Automatik-Rückstellung bei Start und verzögertem Start integriert
+- Abfrage Relais-Automatik-Rückstellung bei Brauwerruf integriert
+- Netz-Trafic für Sonoff und Edimax-Komponenten reduziert
+- "Rührwerk in Heizphasen AN"-Option reaktiviert
+- Temperaturempfangsprobleme kleiner 10 und größer 99.9 gefixt
+- IP-Felder gegen Fehleigaben verriegelt 
+- Curl Version aktuallisiert
+- Bug bei Rührwerksverzögerung beim Ausschalten behoben
+- Bug bei Sensorüberwachung von Tasmota-Hardware behoben
+- Buildnumber eingeführt
+- Zusätzliche Rührwerksoption eingeführt
+V2.00
+Initiale Version
