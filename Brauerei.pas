@@ -167,8 +167,6 @@ type
     KochtemperatrurDatenbernehmen1: TMenuItem;
     Einmaischen3567CDatenbernehmen1: TMenuItem;
     GroupBox5: TGroupBox;
-    Label17: TLabel;
-    Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
     Edit21: TEdit;
@@ -191,10 +189,6 @@ type
     Edit29: TEdit;
     Edit30: TEdit;
     GroupBox6: TGroupBox;
-    Label127: TLabel;
-    Label128: TLabel;
-    Label108: TLabel;
-    Label123: TLabel;
     Label112: TLabel;
     Label113: TLabel;
     Label95: TLabel;
@@ -220,9 +214,6 @@ type
     Label132: TLabel;
     Label133: TLabel;
     Label134: TLabel;
-    Edit93: TEdit;
-    Edit94: TEdit;
-    ComboBox38: TComboBox;
     ComboBox26: TComboBox;
     ComboBox29: TComboBox;
     CheckBox37: TCheckBox;
@@ -246,8 +237,6 @@ type
     Edit83: TEdit;
     CheckBox36: TCheckBox;
     CheckBox34: TCheckBox;
-    CheckBox7: TCheckBox;
-    CheckBox6: TCheckBox;
     GroupBox7: TGroupBox;
     Label159: TLabel;
     Label160: TLabel;
@@ -356,6 +345,49 @@ type
     CheckBox43: TCheckBox;
     Edit15: TEdit;
     CheckBox45: TCheckBox;
+    GroupBox13: TGroupBox;
+    Label127: TLabel;
+    Label128: TLabel;
+    Label108: TLabel;
+    Label123: TLabel;
+    Edit93: TEdit;
+    Edit94: TEdit;
+    ComboBox38: TComboBox;
+    CheckBox7: TCheckBox;
+    CheckBox6: TCheckBox;
+    ComboBox2: TComboBox;
+    GroupBox14: TGroupBox;
+    Edit18: TEdit;
+    Label36: TLabel;
+    Edit20: TEdit;
+    Edit31: TEdit;
+    Label37: TLabel;
+    Label38: TLabel;
+    ComboBox10: TComboBox;
+    Label39: TLabel;
+    Label40: TLabel;
+    Label41: TLabel;
+    Label42: TLabel;
+    Label43: TLabel;
+    PIDTimer: TTimer;
+    Label17: TLabel;
+    Label20: TLabel;
+    Edit32: TEdit;
+    Label44: TLabel;
+    TabSheet4: TTabSheet;
+    Edit33: TEdit;
+    DebugTimer: TTimer;
+    Edit34: TEdit;
+    Label45: TLabel;
+    Label46: TLabel;
+    Label47: TLabel;
+    Label48: TLabel;
+    Label49: TLabel;
+    Edit35: TEdit;
+    Edit36: TEdit;
+    Edit37: TEdit;
+    Edit38: TEdit;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -471,6 +503,17 @@ type
     procedure CheckBox43Click(Sender: TObject);
     procedure CheckBox42Click(Sender: TObject);
     procedure CheckBox45Click(Sender: TObject);
+    procedure Edit18Change(Sender: TObject);
+    procedure Edit18KeyPress(Sender: TObject; var Key: Char);
+    procedure Edit18Exit(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
+    procedure PIDTimerTimer(Sender: TObject);
+    procedure Edit32Change(Sender: TObject);
+    procedure Edit32Exit(Sender: TObject);
+    procedure Edit32KeyPress(Sender: TObject; var Key: Char);
+    procedure Edit33Change(Sender: TObject);
+    procedure DebugTimerTimer(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -481,30 +524,46 @@ procedure TimerDialogClose;
 
 var
   Form1: TForm1;
-  myFile,mySetup,myImportSettingsFile,myLogfile: TextFile;
-  Rezeptname,Pfad,Pfad2,KBHDBPfad,RecText,arduinotfs,rastart,logname: String;
+
+  myFile,mySetup,myImportSettingsFile,myLogfile
+  : TextFile;
+
+  Rezeptname,Pfad,Pfad2,KBHDBPfad,RecText,arduinotfs,rastart,logname,kbhv,kbhv2,
+  kbhv3
+  : String;
+
   ladefehler,pause,start,stop,file_korrupt,Rast,Brauerruf,Heizbedarf,
-  Ruehrbedarf,Kuehlungbedarf,Alarmbedarf,Hendibreak,FehlerErkannt,
-  ManualMoved,AutoCommand,HSwitch,RSwitch,KSwitch,ASwitch: boolean;
-  arduinofloattempalt,arduinofloattemp,arduinotempdelta, floattemp,
-  ptime,atime,htime,rtime,gtime,kwert,kfaktor,Gradient,storetempon,
-  storetempoff: Extended;
+  Ruehrbedarf,Kuehlungbedarf,Alarmbedarf,Hendibreak,FehlerErkannt,ManualMoved,
+  AutoCommand,HSwitch,RSwitch,KSwitch,ASwitch,Sensorfehlermeldung
+  : boolean;
+
+  arduinofloattempalt,arduinofloattemp,arduinotempdelta,floattemp,ptime,atime,
+  htime,rtime,gtime,kwert,kfaktor,Gradient,storetempon,storetempoff,
+  e_alt,e_sum
+  : Extended;
+
   solltemp,Heizung,Ruehrwerk,Kuehlung,Alarm,Datensatz,endpunkt,startpunkt,
-  spanne,RastCount,Zeit,Pausezeit,Pausestartzeit,Timerstartbatstatus,
-  Heizstufe,Heizstufealt,Heizcounter,Heizpuls,Heizpause,
-  Ruehrpulsalt,Ruehrpausealt,Ruehrcounter,Ruehrpuls,Ruehrpause,
-  Alarmpulsalt,Alarmpausealt,alarmcounter,Alarmpuls,Alarmpause,
+  spanne,RastCount,Timerstartbatstatus,Heizstufe,Heizstufealt,Heizcounter,
+  Heizpuls,Heizpause,Ruehrpulsalt,Ruehrpausealt,Ruehrcounter,Ruehrpuls,
+  Ruehrpause,Alarmpulsalt,Alarmpausealt,alarmcounter,Alarmpuls,Alarmpause,
   Countlines,Alarmpausezaehler,verzoegerung,verzoegerung2,ruehrverzoegerung,
-  ruehrverzoegerung2,HeizungAlt,RuehrwerkAlt,KuehlungAlt,AlarmAlt,
-  HCount,RCount,KCount,ACount : integer;
+  ruehrverzoegerung2,HeizungAlt,RuehrwerkAlt,KuehlungAlt,AlarmAlt,HCount,RCount,
+  KCount,ACount,PIDLoop,Restzeit
+  : integer;
+
+  Zeit,Pausezeit,Sollzeit,Pausestartzeit
+  : longint;
+
   Gradientgetter: Array[1..120] of Extended;
+
   funktionsinfo: Array [1..10] of Boolean;
+
   sl,sl2: TStringList;
 
 const
-  Version = 'V 2.01 Trial';
-  Buildno = '02010001';
-  
+  Version = 'V 2.02 Trial';
+  Buildno = '02020012';
+
 implementation
 
 {$R *.dfm}
@@ -630,6 +689,14 @@ begin
   if changededit.Text='' then changededit.Text:='0';
   try Intdummy:=strtoint(changededit.Text); changededit.Text:=inttostr(Intdummy); except begin changededit.Text:=fail; Intdummy:=strtoint(changededit.Text); MyShowMessagePos('Unerlaubtes Zeichen!', Form1.Left, 350, Form1.Top, 250); end; end;
   if (Intdummy>max) or (Intdummy<min) then begin changededit.Text:=fail; MyShowMessagePos('Unerlaubte Wert!', Form1.Left, 350, Form1.Top, 250); end;
+end;
+
+procedure editcheckdezimal(changededit: TEdit; min:Extended; max:Extended; fail:string);
+var Floatdummy: Extended;
+begin
+  if changededit.Text='' then changededit.Text:='0';
+  try Floatdummy:=strtofloat(changededit.Text); changededit.Text:=FloatToStrF(Floatdummy, ffFixed, 8, 4); except begin changededit.Text:=fail; Floatdummy:=strtofloat(changededit.Text); MyShowMessagePos('Unerlaubtes Zeichen!', Form1.Left, 350, Form1.Top, 250); end; end;
+  if (Floatdummy>max) or (FloaTdummy<min) then begin changededit.Text:=fail; MyShowMessagePos('Unerlaubte Wert!', Form1.Left, 350, Form1.Top, 250); end;
 end;
 
 procedure WLAN_SwitchCheck;
@@ -797,7 +864,7 @@ end;end;
 procedure SetPictures;
 begin with Form1 do begin
   if Heizung=0 then Image2.Picture.LoadFromFile(pfad + 'Graphics\Feuer-aus.bmp')
-  else if (checkbox7.Checked=true) and (Solltemp=strtoint(Combobox38.Text)) then Image2.Picture.LoadFromFile(pfad + 'Graphics\Feuer-dauerein.bmp')
+  else if (checkbox7.Checked=true) and (Solltemp>=strtoint(Combobox38.Text)) and (Solltemp<110) then Image2.Picture.LoadFromFile(pfad + 'Graphics\Feuer-dauerein.bmp')
   else Image2.Picture.LoadFromFile(pfad + 'Graphics\Feuer-ein.bmp');
   if Ruehrwerk=0 then Image3.Picture.LoadFromFile(pfad + 'Graphics\Ruehrwerk-aus.bmp') else Image3.Picture.LoadFromFile(pfad + 'Graphics\Ruehrwerk-ein.bmp');
   if Kuehlung=0 then Image4.Picture.LoadFromFile(pfad + 'Graphics\Kuehlung-aus.bmp') else Image4.Picture.LoadFromFile(pfad + 'Graphics\Kuehlung-ein.bmp');
@@ -939,6 +1006,12 @@ begin
   WriteLn(mySetup,'Tasmota-Ruehrwerk;'+stringreplace(Form.ComboBox7.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Tasmota-Pumpe;'+stringreplace(Form.ComboBox8.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Tasmota-Alarm;'+stringreplace(Form.ComboBox9.Text,' ','€€€',[rfReplaceAll]));
+  WriteLn(mySetup,'Regler;'+stringreplace(Form.ComboBox2.Text,' ','€€€',[rfReplaceAll]));
+  WriteLn(mySetup,'PID-Dead Band;'+Form.ComboBox10.Text);
+  WriteLn(mySetup,'PID-Kp;'+Form.Edit18.Text);
+  WriteLn(mySetup,'PID-Ki;'+Form.Edit20.Text);
+  WriteLn(mySetup,'PID-Kd;'+Form.Edit31.Text); 
+  WriteLn(mySetup,'Period duration;'+Form.Edit32.Text);
   CloseFile(mySetup);
 end;
 
@@ -1154,10 +1227,23 @@ begin
     Form.Combobox8.ItemIndex := Form.Combobox8.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox9.ItemIndex := Form.Combobox9.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
-  except
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox2.ItemIndex := Form.Combobox2.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Combobox10.ItemIndex := Form.Combobox10.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit18.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit20.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit31.Text := sl2[sl2.Count-1];
+    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
+    Form.Edit32.Text := sl2[sl2.Count-1];
+    except
     file_korrupt:=true;
   end;
   Form1.Edit8Change(Form1);
+  Form1.ComboBox2Change(Form1);
   sl.Free;
   sl2.Free;
 end;
@@ -1183,19 +1269,33 @@ var slDBpath: string;
     MemText: String;
     ID,i,k,gk: integer;
     vwh: boolean;
+    Floatdummy: Extended;
 begin with Form1 do begin
   Edit90.Text := OpenDialog2.FileName;
   slDBPath := OpenDialog2.FileName;
   sldb := TSQLiteDatabase.Create(slDBPath);
+
   try
+    if sldb.TableExists('Global') then
+    begin
+      sltb := slDb.GetTable('SELECT * FROM Global');
+      kbhv := sltb.FieldAsString(sltb.FieldIndex['db_Version']);
+      if strtoint(kbhv)<2000 then kbhv2:='Rast' else kbhv2:='';
+      if strtoint(kbhv)<2005 then kbhv3:='NachBitterhopfung' else kbhv3:='';
+    end;
+
     if sldb.TableExists('Sud') then
     begin
       //query the data
       if ComboBox43.Itemindex <= 0 then sltb := slDb.GetTable('SELECT * FROM Sud');
-      if ComboBox43.Itemindex = 1 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
-      if ComboBox43.Itemindex = 2 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
-      if ComboBox43.Itemindex = 3 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
-      if ComboBox43.Itemindex >= 4 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 0');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 2');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 3');
       try
         if sltb.Count > 0 then
         begin
@@ -1208,21 +1308,48 @@ begin with Form1 do begin
           ebName.Text := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['Sudname']));
           ID := sltb.FieldAsInteger(sltb.FieldIndex['ID']);
           ebID.Text := inttostr(ID);
-          memMaisch.Text := 'Einmaischen - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['EinmaischenTemp']))+chr(176)+'C - 0 min.';
         end;
       except
         MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
-      sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID));
+      if strtoint(kbhv)<2005 then
+      begin
+        try
+          if sltb.Count > 0 then
+          begin
+            memMaisch.Text := 'Einmaischen - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['EinmaischenTemp']))+chr(176)+'C - 0 min.';
+          end;
+        except
+          MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+        end;
+      end
+      else
+      begin
+        sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
+        try
+          if sltb.Count > 0 then
+          begin
+            memMaisch.Text := 'Einmaischen - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['Temp']))+chr(176)+'C - 0 min.';
+          end
+          else
+          begin
+            memMaisch.Text := 'Einmaischen - 20'+chr(176)+'C - 0 min.';
+          end;
+        except
+          MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+        end;
+      end;
+      if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
+      if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
       try
         if sltb.Count > 0 then
         begin
           for i:=1 to sltb.Count do
           begin
-            MemText:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastName']));
+            MemText:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Name']));
             Delete(MemText, Pos(' ', MemText), 99);
-            MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastTemp']))+chr(176)+'C - ';
-            MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastDauer'])+' min.');
+            MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']))+chr(176)+'C - ';
+            MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer'])+' min.');
             memMaisch.Lines.Add(MemText);
             sltb.Next;
           end;
@@ -1238,8 +1365,8 @@ begin with Form1 do begin
       sltb := slDb.GetTable('SELECT * FROM Sud');
       try
         if sltb.Count > 0 then for i:=1 to Datensatz do sltb.Next;
-        memMaisch.Lines.Add('Gesamtkochdauer - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']))+' min.');
-        gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']));
+        memMaisch.Lines.Add('Gesamtkochdauer - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['Kochdauer'+kbhv3]))+' min.');
+        gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['Kochdauer'+kbhv3]));
       except
         MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
@@ -1258,8 +1385,9 @@ begin with Form1 do begin
                 memMaisch.Lines.Add('Vorderwürzhopfen :');
                 vwh:=true;
               end;
-              MemText:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']))+ ' g';
-              MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['Name']));
+              MemText:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']));
+              Floatdummy:=strtofloat(MemText); MemText:=FloatToStrF(Floatdummy, ffFixed, 8, 1);
+              MemText:=MemText+ ' g'+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['Name']));
               memMaisch.Lines.Add(MemText);
             end;
             sltb.Next;
@@ -1280,8 +1408,9 @@ begin with Form1 do begin
             begin
               k:=gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']));
               MemText:=inttostr(k)+' min. - ';
-              MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']))+ ' g';
-              MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['Name']));
+              Floatdummy:=strtofloat(UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['erg_Menge'])));
+              MemText:=MemText+FloatToStrF(Floatdummy, ffFixed, 8, 1);
+              MemText:=MemText+ ' g'+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['Name']));
               memMaisch.Lines.Add(MemText);
             end;
             sltb.Next;
@@ -1317,10 +1446,16 @@ begin with Form1 do begin
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
       if ComboBox43.Itemindex <= 0 then sltb := slDb.GetTable('SELECT * FROM Sud');
-      if ComboBox43.Itemindex = 1 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
-      if ComboBox43.Itemindex = 2 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
-      if ComboBox43.Itemindex = 3 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
-      if ComboBox43.Itemindex >= 4 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 0');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 2');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 3');
+
+
 //    sltb := slDb.GetTable('SELECT * FROM Sud');
     try
       if sltb.Count > 0 then
@@ -1328,22 +1463,51 @@ begin with Form1 do begin
         if Datensatz > sltb.Count-1 then Datensatz:=sltb.Count-1;
         if Datensatz < 0 then Datensatz:=0;
         for i:=1 to Datensatz do sltb.Next;
-        Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := floattostr(sltb.FieldAsDouble(sltb.FieldIndex['EinmaischenTemp']));
         Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := '0';
         ID := sltb.FieldAsInteger(sltb.FieldIndex['ID']);
       end;
     except
       MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
     end;
-    sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID));
+
+    if strtoint(kbhv)<2005 then
+    begin
+      try
+        if sltb.Count > 0 then
+        begin
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := floattostr(sltb.FieldAsDouble(sltb.FieldIndex['EinmaischenTemp']));
+        end
+      except
+        MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+      end;
+    end
+    else
+    begin
+      sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
+      try
+        if sltb.Count > 0 then
+        begin
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := floattostr(sltb.FieldAsDouble(sltb.FieldIndex['Temp']));
+        end
+        else
+        begin
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := '20';
+        end;
+        except
+        MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+      end;
+    end;
+    if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
+    if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+
     try
       if sltb.Count > 0 then
       begin
         for i:=1 to sltb.Count do
         begin
           Stringgrid1.RowCount:=Stringgrid1.RowCount+1;
-          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastTemp']));
-          Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastDauer']));;
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']));
+          Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer']));;
           sltb.Next;
         end;
       end;
@@ -1368,13 +1532,14 @@ begin with Form1 do begin
     Stringgrid1.Cells[1,1] := 'Einmaischen';
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
-    sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID));
+    if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
+    if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
     try
       if sltb.Count > 0 then
       begin
         for i:=1 to sltb.Count do
         begin
-          Tempstr:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex['RastName']));
+          Tempstr:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Name']));
           Delete(Tempstr, Pos(' ', Tempstr), 99);
           Stringgrid1.Cells[1,i+1] := Tempstr;
           sltb.Next;
@@ -1393,7 +1558,7 @@ var slDBpath: string;
     sldb: TSQLiteDatabase;
     sltb: TSQLIteTable;
     Tempstr: String;
-    Nachiso:Extended;
+    Nachiso,Floatdummy:Extended;
     start,i,gk,vw,k,k2,k3,c,ks,novw, vwc,hc,rkc,ihc,ric,wph: integer;
 begin with Form1 do begin
   if Stringgrid1.Cells[2,1]<>'' then start:=Stringgrid1.RowCount else start:=1;
@@ -1402,14 +1567,18 @@ begin with Form1 do begin
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
       if ComboBox43.Itemindex <= 0 then sltb := slDb.GetTable('SELECT * FROM Sud');
-      if ComboBox43.Itemindex = 1 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
-      if ComboBox43.Itemindex = 2 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
-      if ComboBox43.Itemindex = 3 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
-      if ComboBox43.Itemindex >= 4 then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeGebraut = 1');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 0');
+      if (strtoint(kbhv)<2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE BierWurdeVerbraucht = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 1) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 0');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 2) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 1');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex = 3) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 2');
+      if (strtoint(kbhv)>=2000) and (ComboBox43.Itemindex >= 4) then sltb := slDb.GetTable('SELECT * FROM Sud WHERE Status = 3');
 //    sltb := slDb.GetTable('SELECT * FROM Sud');
     try
       if sltb.Count > 0 then for i:=1 to Datensatz do sltb.Next;
-      gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['KochdauerNachBitterhopfung']));
+      gk:=round(sltb.FieldAsDouble(sltb.FieldIndex['Kochdauer'+kbhv3]));
       Nachiso := sltb.FieldAsDouble(sltb.FieldIndex['Nachisomerisierungszeit']);
     except
       MyMessageDlgPos('Kein Eintrag in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
@@ -1527,8 +1696,9 @@ begin with Form1 do begin
           begin
             if c=1 then Tempstr:=Tempstr+' - ';
             c:=1;
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['erg_Menge'])+' g ';
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['Name']);
+            Floatdummy:=strtofloat(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']));
+            Tempstr:=Tempstr+FloatToStrF(Floatdummy, ffFixed, 8, 1);
+            Tempstr:=Tempstr+' g '+sltb.FieldAsString(sltb.FieldIndex['Name']);
           end;
           sltb.Next;
         end;
@@ -1555,8 +1725,9 @@ begin with Form1 do begin
               Tempstr:='';
             end;
             if Tempstr>'' then Tempstr:=Tempstr+' - ';
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['erg_Menge'])+' g ';
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['Name']);
+            Floatdummy:=strtofloat(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']));
+            Tempstr:=Tempstr+FloatToStrF(Floatdummy, ffFixed, 8, 1);
+            Tempstr:=Tempstr+' g '+sltb.FieldAsString(sltb.FieldIndex['Name']);
             k:=gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']));
           end;
           sltb.Next;
@@ -1590,8 +1761,9 @@ begin with Form1 do begin
               Tempstr:='';
             end;
             if Tempstr>'' then Tempstr:=Tempstr+' - ';
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['erg_Menge'])+' g ';
-            Tempstr:=Tempstr+sltb.FieldAsString(sltb.FieldIndex['Name']);
+            Floatdummy:=strtofloat(sltb.FieldAsString(sltb.FieldIndex['erg_Menge']));
+            Tempstr:=Tempstr+FloatToStrF(Floatdummy, ffFixed, 8, 1);
+            Tempstr:=Tempstr+' g '+sltb.FieldAsString(sltb.FieldIndex['Name']);
             k:=gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']));
           end;
           sltb.Next;
@@ -1618,6 +1790,7 @@ end; end;
 procedure KBHSettingsLaden;
 var tempstr: String;
 begin with Form1 do begin
+  try
   if FileExists(pfad+'import\file.txt') then
     begin
       AssignFile(myImportSettingsFile, pfad+'import\file.txt');
@@ -1644,6 +1817,9 @@ begin with Form1 do begin
       SQLBrowse;
       ScrollBar1.Position:=Scrollbar1.max;
     end;
+    except
+      MyMessageDlgPos('KBH Datenbank nicht gefunden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+    end;
 end;end;
 
 procedure AlarmAusgabe(Alarmtext:String);
@@ -1668,6 +1844,14 @@ begin with Form1 do begin
       Button4.Caption:='Automatik'; Button5.Caption:='Automatik'; Button6.Caption:='Automatik'; Button7.Caption:='Automatik';
     end;
   end;
+  if ((Button30.Caption<>'Automatik') or (Button31.Caption<>'Automatik') or (Button32.Caption<>'Automatik') or (Button33.Caption<>'Automatik') or (Button34.Caption<>'Automatik') or (Button35.Caption<>'Automatik') or (Button36.Caption<>'Automatik') or (Button37.Caption<>'Automatik') or (Button38.Caption<>'Automatik') or (Button39.Caption<>'Automatik')) and (CheckBox3.Checked=True) then
+  begin
+    buttonSelected:=MyMessageDlgPos('Nicht alle Zusatzfunktionen auf Automatik-Betrieb! Automatik aktivieren?', mtInformation, [mbYES, mbNO], Form1.Left, 350, Form1.Top, 250);
+    if buttonSelected = mrYes then
+    begin
+      Button30.Caption:='Automatik'; Button31.Caption:='Automatik'; Button32.Caption:='Automatik'; Button33.Caption:='Automatik'; Button34.Caption:='Automatik'; Button35.Caption:='Automatik'; Button36.Caption:='Automatik'; Button37.Caption:='Automatik'; Button38.Caption:='Automatik'; Button39.Caption:='Automatik';
+    end;
+  end;
 end;end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -1675,6 +1859,7 @@ var i,buttonSelected: integer;
 begin
   Combobox4.DropDownCount := Combobox4.Items.Count;
   Combobox5.DropDownCount := Combobox5.Items.Count;
+  TabSheet4.TabVisible:=false;
   BitBtn3.Enabled:=false;
   BitBtn1.Enabled:=true;
   BitBtn2.Enabled:=false;
@@ -1697,7 +1882,7 @@ begin
   Form1.Top:=20;
   Application.HintHidePause:= 3000;
   Form1.Left:=20;
-  pfad:=ExtractFilePath(ParamStr(0));  
+  pfad:=ExtractFilePath(ParamStr(0));
   KBHSettingsLaden;
   OpenDialog1.InitialDir:=pfad+'Rezepte';
   SaveDialog1.InitialDir:=pfad+'Rezepte';
@@ -1772,7 +1957,7 @@ begin
 end;
 
 procedure Rastpruefung;
-var restzeit,sollzeit,prozent:integer;
+var prozent:integer;
     strzeit:String;
 begin with Form1 do begin
   if (Brauerruf=true) and (start=true) then
@@ -1887,7 +2072,7 @@ end;
 
 procedure TForm1.BitBtn8Click(Sender: TObject);
 var buttonSelected:integer;
-begin                                    
+begin
   OpenDialog1.InitialDir:=pfad+'Rezepte';
   OpenDialog1.FileName:='test.rzt';
   if OpenDialog1.Execute then
@@ -1978,7 +2163,6 @@ begin
   DecimalSeparator := '.';
   if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[5]='t') or (RecText[5]='p') or (RecText[5]='s') or (RecText[5]='e')) then
   begin
-    SensorUeberwachungTimer.Enabled:=false;
     if (RecText[5]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
     if (RecText[5]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
     if (RecText[5]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
@@ -1997,12 +2181,12 @@ begin
     end
     else
     begin
-      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+      SensorUeberwachungTimer.Enabled:=false;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+ABinding.PeerIP+' - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
     end;
   end;
   if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[6]='t') or (RecText[6]='p') or (RecText[6]='s') or (RecText[6]='e')) then
   begin
-    SensorUeberwachungTimer.Enabled:=false;
     if (RecText[6]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
     if (RecText[6]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
     if (RecText[6]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
@@ -2021,12 +2205,12 @@ begin
     end
     else
     begin
-      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+      SensorUeberwachungTimer.Enabled:=false;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+ABinding.PeerIP+' - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
     end;
   end;
   if (ComboBox1.ItemIndex=0) and (RecText[1]='T') and ((RecText[7]='t') or (RecText[7]='p') or (RecText[7]='s') or (RecText[7]='e')) then
   begin
-    SensorUeberwachungTimer.Enabled:=false;
     if (RecText[7]='p') and (BitBtn2.Enabled=true) then begin BitBtn2Click(Form1); AutoCommand:=true; end;
     if (RecText[7]='s') and (BitBtn1.Enabled=true) then begin BitBtn1Click(Form1); AutoCommand:=true; end;
     if (RecText[7]='e') and (BitBtn3.Enabled=true) then begin BitBtn3Click(Form1); AutoCommand:=true; end;
@@ -2042,10 +2226,13 @@ begin
     else if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
     begin
       Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert unplausibel';
+      if arduinofloattemp=-0.1 then Sensorfehlermeldung:=true;
+      arduinofloattemp:=arduinofloattempalt;
     end
     else
     begin
-      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+      SensorUeberwachungTimer.Enabled:=false;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('UDP-IN - '+ABinding.PeerIP+' - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
     end;
   end;
   if (checkbox33.Checked=true) and (start=true) then SensorUeberwachungTimer.Enabled:=true;
@@ -2225,6 +2412,7 @@ procedure TForm1.BitBtn1Click(Sender: TObject);
 begin
   if checkbox6.checked=true then HendiTimer.Enabled:=true;
   Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-aktiv.bmp');
+  Sensorfehlermeldung:=false;
   BitBtn1.Enabled:=false;
   BitBtn8.Enabled:=false;
   BitBtn2.Enabled:=true;
@@ -2309,7 +2497,12 @@ begin
     BitBtn1.Enabled:=true;
     BitBtn2.Enabled:=false;
     Panel4.Caption:='-- °C';
-    if (AutoCommand=false) then
+    if (Sensorfehlermeldung=true) then
+    begin
+      Label16.Caption:=('Es gab vereinzelt Temperatursensor-Fehler. Sensor tauschen!');
+      panel8.Top:=106;
+    end
+    else if (AutoCommand=false) then
     begin
       Label16.Caption:=('Brauvorgang wurde beendet - mit OK fortsetzen!');
       panel8.Top:=106;
@@ -2338,7 +2531,6 @@ begin
   Rast:=false;
   StringGrid1.DragMode:=dmManual;
   for i:=1 to 120 do gradientgetter[i]:=0;
-  for i:=1 to 10 do Funktionsinfo[i]:=false;
   Updown2.Visible:=false;
   BitBtn16.Enabled:=true;
   Label136.Visible:=false;
@@ -3012,6 +3204,43 @@ end;
 
 procedure TForm1.Button100Click(Sender: TObject); begin if (Sender as TButton).Caption='Aus' then (Sender as TButton).Caption:='An' else if (Sender as TButton).Caption='An' then (Sender as TButton).Caption:='Automatik' else (Sender as TButton).Caption:='Aus'; end;
 
+procedure PIDController;
+var Kp,Ki,Kd,e,y:Extended;
+    Z_CALC_0,Z_CALC_1,Z_H_PERIOD:Integer;
+const Ta = 5;
+const Z_H_1_MIN = 5;
+const Z_H_0_MIN = 5;
+begin with Form1 do begin
+
+  y:=0;
+  Kp:=StrtoFloat(Edit18.Text);
+  Ki:=StrtoFloat(Edit20.Text);
+  Kd:=StrtoFloat(Edit31.Text);
+  Z_H_PERIOD:=StrtoInt(Edit32.Text);
+
+  PIDTimer.Interval:=Z_H_PERIOD*10;
+
+  if floattemp>=solltemp-strtofloat(combobox10.Text) then
+  begin
+    e:=solltemp-floattemp;
+	  e_sum:=e_sum+e;
+  	y:=Kp*e+Ki*Ta*e_sum+Kd*(e-e_alt)/Ta;
+	  e_alt:=e;
+  	if y>=100-Z_H_1_MIN/strtoint(Edit32.Text)*100 then y:=100;
+    if y<=Z_H_0_MIN/strtoint(Edit32.Text)*100 then y:=0;
+    if PIDLoop>100-y then Heizung:=1 else Heizung:=0;
+  end
+  else
+  begin
+    Heizung:=1;
+    e_alt:=0;
+    e_sum:=0;
+  end;
+
+  Label17.Caption:='PID-Debugging: PIDLoopPos.: '+inttostr(PIDLoop)+'% - PIDOutput: '+FloatToStrF(y, ffFixed, 3, 0)+'%';
+
+end;end;
+
 procedure HeizungBedarfsermittlung;
 var regeltemp:Extended;
 begin with Form1 do begin
@@ -3023,11 +3252,16 @@ begin with Form1 do begin
   if (checkbox41.Checked=true) and (Heizbedarf=false) and (floattemp>storetempon+strtofloat(Combobox55.text)) then begin AlarmAusgabe('Heizung scheint durchgehend zu heizen! Relais prüfen!'); storetempon:=floattemp; end;
   if (checkbox41.Checked=true) and (Heizbedarf=true) and (floattemp<storetempoff-strtofloat(Combobox56.text)) then begin AlarmAusgabe('Heizung scheint nicht zu heizen! Relais prüfen!'); storetempoff:=floattemp; end;
   if (checkbox37.Checked=true) and (Heizbedarf=false) then regeltemp:=solltemp-strtofloat(Combobox26.text) else regeltemp:=solltemp;
-  if (checkbox7.Checked=true) and (Solltemp=strtoint(Combobox38.Text)) then
+  if (checkbox7.Checked=true) and (Solltemp>=strtoint(Combobox38.Text)) and (Solltemp<110) then
   begin
     if checkbox3.checked=true then HendiTimer.Enabled:=true;
     Heizbedarf:=true;
     Heizstufe:=9;
+  end
+  else if (ComboBox2.ItemIndex=1) and (floattemp<solltemp) then
+  begin
+    Heizbedarf:=true;
+    Heizstufe:=9999;
   end
   else if floattemp<Regeltemp then
   begin
@@ -3047,7 +3281,7 @@ begin with Form1 do begin
       if (checkbox36.checked=true) and (gradient>strtofloat(ComboBox25.Text)) then Heizstufe:=0;
     end;
   end
-  else begin Heizbedarf:=false; HendiTimer.Enabled:=false; end;
+  else begin Heizbedarf:=false; e_alt:=0; e_sum:=0; HendiTimer.Enabled:=false; end;
 end;end;
 procedure HeizungSchalten;
 begin with Form1 do begin
@@ -3097,6 +3331,7 @@ begin with Form1 do begin
       else Heizcounter:=0;
     end
     else if Heizstufe=9 then Heizung:=1
+    else if Heizstufe=9999 then PIDController
     else if Heizstufe=0 then Heizung:=0;
   end
   else Heizung:=0;
@@ -3364,12 +3599,14 @@ begin
 end;
 
 procedure TForm1.Button8Click(Sender: TObject);
+var i:integer;
 begin
   if Brauerruf=false then
   begin
     Stringgrid1.Top:=226; Stringgrid1.Height:=279;
     if StringGrid1.RowCount>9 then Panel3.Visible:=false else Panel3.Visible:=true;
   end;
+  for i:=1 to 10 do Funktionsinfo[i]:=false;
   panel8.Top:=300;
   Brauerruf:=false;
   autopositioncheck;
@@ -3641,8 +3878,7 @@ end;
 procedure TForm1.ReadTasmotaTimer(Sender: TObject);
 var
   get_url: string;
-  resp: TMemoryStream;
-  SL: TStringList;
+  StringL: string;
   IP:String;
   StringStart,StringEnd:integer;
 begin
@@ -3651,20 +3887,16 @@ begin
     DecimalSeparator := '.';
     IP:=(Form1.FindComponent('Edit' + IntToStr(109+Combobox1.ItemIndex)) as TEdit).Text;
     get_url := 'http://'+IP+'/cm?cmnd=status%2010';
-    resp := TMemoryStream.Create;
-    SL := TStringList.Create;
     try
-      try IdHTTP2.Get(get_url+'v', resp); Except end;
-      resp.Position := 0; // <-- add this!!
-      SL.LoadFromStream(resp);
+      try StringL:=IdHTTP2.Get(get_url); Except end;
 
       Memo1.Lines.Append('');
 
-      StringStart := Pos('"Temperature":', SL.Text)+14;
-      StringEnd := Pos('"TempUnit', SL.Text)-2;
+      StringStart := Pos('"Temperature":', StringL)+14;
+      StringEnd := Pos('"TempUnit', StringL)-2;
 
       try
-        arduinotfs:= copy(SL.Text,StringStart,StringEnd-StringStart); arduinofloattemp:=strtofloat(arduinotfs);
+        arduinotfs:= copy(StringL,StringStart,StringEnd-StringStart); arduinofloattemp:=strtofloat(arduinotfs);
         arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
         arduinofloattempalt:=arduinofloattemp;
         if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
@@ -3682,8 +3914,6 @@ begin
         Memo1.Lines.Strings[Memo1.Lines.Count-1]:='TASMOTA-IN - kein gültiger Temperaturwert empfangen';
       end;
     finally
-      resp.Free;
-      SL.Free;
     end;
   end;
 end;
@@ -3691,5 +3921,42 @@ end;
 procedure TForm1.CheckBox43Click(Sender: TObject); begin if checkbox43.Checked=true then begin checkbox42.Checked:=false; checkbox45.Checked:=false; end; end;
 procedure TForm1.CheckBox42Click(Sender: TObject); begin if checkbox42.Checked=true then begin checkbox45.Checked:=false; checkbox43.Checked:=false; end; end;
 procedure TForm1.CheckBox45Click(Sender: TObject); begin if checkbox45.Checked=true then begin checkbox42.Checked:=false; checkbox43.Checked:=false; end; end;
+
+procedure TForm1.Edit18Change(Sender: TObject); begin if TEdit(Sender).Text='' then TEdit(Sender).Text:='0'; end;
+procedure TForm1.Edit18KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#46,#48..#57]) then key:=#0; end;
+procedure TForm1.Edit18Exit(Sender: TObject); begin editcheckdezimal(Edit18,0.000,9999.9999,'0.0000'); end;
+
+procedure TForm1.Edit32Change(Sender: TObject); begin if TEdit(Sender).Text='' then TEdit(Sender).Text:='20'; end;
+procedure TForm1.Edit32KeyPress(Sender: TObject; var Key: Char); begin if Key=#13 then begin Key:=#0; SendMessage(Handle, WM_NEXTDLGCTL, 0, 0); end; if not (key in [#8,#48..#57]) then key:=#0; end;
+procedure TForm1.Edit32Exit(Sender: TObject); begin editcheck(Edit32,10,60,'20'); end;
+
+procedure TForm1.ComboBox2Change(Sender: TObject);
+begin
+  if Combobox2.ItemIndex=1 then begin Groupbox14.Visible:=true; Label17.Visible:=true; end else begin Groupbox14.Visible:=false; Label17.Visible:=false; end;
+end;
+
+procedure TForm1.PIDTimerTimer(Sender: TObject); begin if PIDLoop<100 then PIDLoop:=PIDLoop+1 else PIDLoop:=0; end;
+
+procedure TForm1.Edit33Change(Sender: TObject);
+begin
+  If Edit33.Text='681994' then begin TabSheet4.TabVisible:=true; DebugTimer.Enabled:=true; end else begin TabSheet4.TabVisible:=false; DebugTimer.Enabled:=false; end;
+end;
+
+procedure TForm1.DebugTimerTimer(Sender: TObject);
+begin
+  if Button1.Caption='Start' then
+  begin
+    Edit34.Text:=inttostr(gettickcount);
+    Edit35.Text:=inttostr(Zeit);
+    Edit36.Text:=inttostr(Sollzeit);
+    Edit37.Text:=inttostr(Restzeit);
+    Edit38.Text:=inttostr(Pausezeit);
+  end;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  If Button1.Caption='Start' then Button1.Caption:='Stop' else Button1.Caption:='Start'
+end;
 
 end.

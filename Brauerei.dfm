@@ -5,7 +5,7 @@ object Form1: TForm1
   BorderStyle = bsSingle
   Caption = 'Brauerei'
   ClientHeight = 593
-  ClientWidth = 930
+  ClientWidth = 926
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
@@ -18,23 +18,9 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 15
-  object Label17: TLabel
-    Left = 29
-    Top = 40
-    Width = 92
-    Height = 15
-    Caption = 'Zusatzfunktion 1:'
-  end
-  object Label20: TLabel
-    Left = 37
-    Top = 48
-    Width = 92
-    Height = 15
-    Caption = 'Zusatzfunktion 1:'
-  end
   object PageControl1: TPageControl
-    Left = 8
-    Top = 8
+    Left = 5
+    Top = 5
     Width = 913
     Height = 583
     ActivePage = TabSheet1
@@ -43,9 +29,9 @@ object Form1: TForm1
     object TabSheet1: TTabSheet
       Caption = 'Brauprozess'
       object Image1: TImage
-        Left = 176
-        Top = 344
-        Width = 49
+        Left = 296
+        Top = 312
+        Width = 33
         Height = 33
         Picture.Data = {
           07544269746D617082060000424D820600000000000042000000280000001400
@@ -525,6 +511,13 @@ object Form1: TForm1
         Width = 905
         Height = 63
         TabOrder = 2
+        object Label17: TLabel
+          Left = 544
+          Top = 8
+          Width = 30
+          Height = 15
+          Caption = '          '
+        end
         object BitBtn1: TBitBtn
           Left = 5
           Top = 2
@@ -13324,244 +13317,242 @@ object Form1: TForm1
         end
         object TabSheet7: TTabSheet
           Caption = 'Steuerungsparameter'
-          object GroupBox6: TGroupBox
-            Left = 8
+          object GroupBox7: TGroupBox
+            Left = 456
+            Top = 360
+            Width = 417
+            Height = 105
+            Caption = 'Alarmparameter'
+            TabOrder = 2
+            object Label159: TLabel
+              Left = 22
+              Top = 29
+              Width = 91
+              Height = 15
+              Caption = 'Alarmpulsdauer:'
+            end
+            object Label160: TLabel
+              Left = 21
+              Top = 66
+              Width = 102
+              Height = 15
+              Caption = 'Alarmpausedauer:'
+            end
+            object TrackBar2: TTrackBar
+              Left = 186
+              Top = 25
+              Width = 97
+              Height = 26
+              Max = 110
+              Min = 10
+              Frequency = 10
+              Position = 10
+              TabOrder = 0
+            end
+            object TrackBar3: TTrackBar
+              Left = 186
+              Top = 63
+              Width = 97
+              Height = 26
+              Max = 100
+              Frequency = 10
+              Position = 5
+              TabOrder = 1
+            end
+          end
+          object GroupBox8: TGroupBox
+            Left = 456
             Top = 8
-            Width = 433
-            Height = 505
-            Caption = 'Heizparameter'
-            TabOrder = 0
+            Width = 417
+            Height = 177
+            Caption = 'R'#252'hrwerkparameter'
+            TabOrder = 1
+            object Label154: TLabel
+              Left = 20
+              Top = 102
+              Width = 106
+              Height = 15
+              Caption = 'Ausschaltverz'#246'gert:'
+            end
+            object Label153: TLabel
+              Left = 20
+              Top = 78
+              Width = 103
+              Height = 15
+              Caption = 'Einschaltverz'#246'gert:'
+            end
+            object ComboBox45: TComboBox
+              Left = 187
+              Top = 74
+              Width = 105
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 1
+              Text = '0 Sekunden'
+              OnChange = ComboBox45Change
+              Items.Strings = (
+                '0 Sekunden'
+                '5 Sekunden'
+                '10 Sekunden'
+                '30 Sekunden'
+                '1 Minute'
+                '2 Minuten'
+                '5 Minuten')
+            end
+            object ComboBox3: TComboBox
+              Left = 187
+              Top = 98
+              Width = 105
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 2
+              Text = '0 Sekunden'
+              OnChange = ComboBox3Change
+              Items.Strings = (
+                '0 Sekunden'
+                '5 Sekunden'
+                '10 Sekunden'
+                '30 Sekunden'
+                '1 Minute'
+                '2 Minuten'
+                '5 Minuten')
+            end
+            object CheckBox42: TCheckBox
+              Left = 19
+              Top = 27
+              Width = 374
+              Height = 17
+              Caption = 'R'#252'hrwerk gepulst an Heizung koppeln, sonst R'#252'hrwerk aus'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 0
+              OnClick = CheckBox42Click
+            end
+            object CheckBox43: TCheckBox
+              Left = 19
+              Top = 144
+              Width = 366
+              Height = 17
+              Caption = 'R'#252'hrwerk durchgehend AN in Aufheizphasen in Rasten pulsen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              OnClick = CheckBox43Click
+            end
+            object CheckBox45: TCheckBox
+              Left = 19
+              Top = 51
+              Width = 390
+              Height = 17
+              Caption = 'R'#252'hrwerk dauer AN an Heizung koppeln, sonst R'#252'hrwerk pulsen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 4
+              OnClick = CheckBox45Click
+            end
+          end
+          object Button9: TButton
+            Left = 688
+            Top = 472
+            Width = 195
+            Height = 41
+            Caption = 'Einstellungen zur'#252'cksetzen'
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -15
+            Font.Name = 'MS Sans Serif'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 3
+            OnClick = Button9Click
+          end
+          object GroupBox13: TGroupBox
+            Left = 456
+            Top = 192
+            Width = 417
+            Height = 161
+            Caption = 'Kochparameter'
+            TabOrder = 4
             object Label127: TLabel
-              Left = 16
-              Top = 419
+              Left = 24
+              Top = 75
               Width = 137
               Height = 15
               Caption = 'Temperaturkorrekturwert:'
             end
             object Label128: TLabel
-              Left = 16
-              Top = 443
+              Left = 24
+              Top = 99
               Width = 144
               Height = 15
               Caption = 'Temperaturkorrekturfaktor:'
             end
             object Label108: TLabel
-              Left = 238
-              Top = 396
+              Left = 246
+              Top = 52
               Width = 14
               Height = 15
               Caption = #176'C'
             end
             object Label123: TLabel
-              Left = 17
-              Top = 395
+              Left = 25
+              Top = 51
               Width = 91
               Height = 15
               Caption = 'Kochtemperatur:'
             end
-            object Label112: TLabel
-              Left = 18
-              Top = 305
-              Width = 109
-              Height = 15
-              Caption = 'Heizungshysterese:'
-            end
-            object Label113: TLabel
-              Left = 232
-              Top = 306
-              Width = 8
-              Height = 15
-              Caption = 'K'
-            end
-            object Label95: TLabel
-              Left = 232
-              Top = 332
-              Width = 8
-              Height = 15
-              Caption = 'K'
-            end
-            object Label98: TLabel
-              Left = 18
-              Top = 332
-              Width = 110
-              Height = 15
-              Caption = 'K'#252'hlungshysterese:'
-            end
-            object Label88: TLabel
-              Left = 17
-              Top = 245
-              Width = 129
-              Height = 15
-              Caption = 'Puls- / Gradientbereich:'
-            end
-            object Label90: TLabel
-              Left = 233
-              Top = 245
-              Width = 8
-              Height = 15
-              Caption = 'K'
-            end
-            object Label81: TLabel
-              Left = 17
-              Top = 93
-              Width = 45
-              Height = 15
-              Caption = 'Puls bis'
-            end
-            object Label86: TLabel
-              Left = 233
-              Top = 93
-              Width = 23
-              Height = 15
-              Caption = 'sek.'
-            end
-            object Label87: TLabel
-              Left = 129
-              Top = 73
-              Width = 18
-              Height = 15
-              Caption = 'Ein'
-            end
-            object Label89: TLabel
-              Left = 185
-              Top = 73
-              Width = 21
-              Height = 15
-              Caption = 'Aus'
-            end
-            object Label93: TLabel
-              Left = 233
-              Top = 141
-              Width = 23
-              Height = 15
-              Caption = 'sek.'
-            end
-            object Label94: TLabel
-              Left = 233
-              Top = 117
-              Width = 23
-              Height = 15
-              Caption = 'sek.'
-            end
-            object Label96: TLabel
-              Left = 17
-              Top = 117
-              Width = 45
-              Height = 15
-              Caption = 'Puls bis'
-            end
-            object Label97: TLabel
-              Left = 233
-              Top = 189
-              Width = 23
-              Height = 15
-              Caption = 'sek.'
-            end
-            object Label100: TLabel
-              Left = 233
-              Top = 165
-              Width = 23
-              Height = 15
-              Caption = 'sek.'
-            end
-            object Label102: TLabel
-              Left = 17
-              Top = 165
-              Width = 45
-              Height = 15
-              Caption = 'Puls bis'
-            end
-            object Label104: TLabel
-              Left = 17
-              Top = 141
-              Width = 45
-              Height = 15
-              Caption = 'Puls bis'
-            end
-            object Label107: TLabel
-              Left = 17
-              Top = 189
-              Width = 45
-              Height = 15
-              Caption = 'Puls bis'
-            end
-            object Label109: TLabel
-              Left = 17
-              Top = 217
-              Width = 112
-              Height = 15
-              Caption = 'Zul'#228'ssiger Gradient:'
-            end
-            object Label110: TLabel
-              Left = 228
-              Top = 217
-              Width = 41
-              Height = 15
-              Caption = 'K / min.'
-            end
-            object Label130: TLabel
-              Left = 97
-              Top = 92
-              Width = 17
-              Height = 15
-              Caption = #176'C:'
-            end
-            object Label131: TLabel
-              Left = 97
-              Top = 116
-              Width = 17
-              Height = 15
-              Caption = #176'C:'
-            end
-            object Label132: TLabel
-              Left = 97
-              Top = 140
-              Width = 17
-              Height = 15
-              Caption = #176'C:'
-            end
-            object Label133: TLabel
-              Left = 97
-              Top = 164
-              Width = 17
-              Height = 15
-              Caption = #176'C:'
-            end
-            object Label134: TLabel
-              Left = 97
-              Top = 188
-              Width = 17
-              Height = 15
-              Caption = #176'C:'
-            end
             object Edit93: TEdit
-              Left = 176
-              Top = 417
+              Left = 184
+              Top = 73
               Width = 41
               Height = 23
-              TabOrder = 24
+              TabOrder = 0
               Text = '0.0'
               OnExit = Edit93Exit
             end
             object Edit94: TEdit
-              Left = 176
-              Top = 441
+              Left = 184
+              Top = 97
               Width = 41
               Height = 23
-              TabOrder = 25
+              TabOrder = 1
               Text = '1.0'
               OnExit = Edit94Exit
             end
             object ComboBox38: TComboBox
-              Left = 176
-              Top = 392
+              Left = 184
+              Top = 48
               Width = 49
               Height = 23
               Hint = 'Temperatur bei der Wasser als kochend '#13#10'erkannt werden soll.'
               Style = csDropDownList
               ItemHeight = 15
               ItemIndex = 11
-              TabOrder = 23
+              TabOrder = 2
               Text = '99'
               Items.Strings = (
                 '110'
@@ -13586,9 +13577,1367 @@ object Form1: TForm1
                 '91'
                 '90')
             end
+            object CheckBox7: TCheckBox
+              Left = 24
+              Top = 22
+              Width = 361
+              Height = 17
+              Caption = 'Zum Erreichen und Halten der Kochtemperatur dauerheizen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+            end
+            object CheckBox6: TCheckBox
+              Left = 24
+              Top = 133
+              Width = 153
+              Height = 17
+              Hint = 
+                'Die Heizung wird nach 100 Minuten '#13#10'Dauerbetrieb f'#252'r 5 Sekunden ' +
+                'ausgeschaltet.'
+              Caption = 'Hendi 2h Unterbrecher'
+              Checked = True
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -12
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              State = cbChecked
+              TabOrder = 4
+            end
+          end
+          object GroupBox14: TGroupBox
+            Left = 8
+            Top = 8
+            Width = 433
+            Height = 457
+            Caption = 'Heizparameter'
+            TabOrder = 6
+            Visible = False
+            object Label36: TLabel
+              Left = 21
+              Top = 33
+              Width = 92
+              Height = 15
+              Caption = 'Kp - P Kontroller:'
+            end
+            object Label37: TLabel
+              Left = 21
+              Top = 57
+              Width = 83
+              Height = 15
+              Caption = 'Ki - I Kontroller:'
+            end
+            object Label38: TLabel
+              Left = 21
+              Top = 81
+              Width = 93
+              Height = 15
+              Caption = 'Kd - D Kontroller:'
+            end
+            object Label39: TLabel
+              Left = 255
+              Top = 125
+              Width = 8
+              Height = 15
+              Caption = 'K'
+            end
+            object Label40: TLabel
+              Left = 21
+              Top = 126
+              Width = 77
+              Height = 15
+              Caption = 'Regelbereich:'
+            end
+            object Label41: TLabel
+              Left = 285
+              Top = 82
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label42: TLabel
+              Left = 287
+              Top = 34
+              Width = 11
+              Height = 15
+              Caption = '- -'
+            end
+            object Label43: TLabel
+              Left = 285
+              Top = 58
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label20: TLabel
+              Left = 21
+              Top = 150
+              Width = 131
+              Height = 15
+              Caption = 'Period - Periodendauer:'
+            end
+            object Label44: TLabel
+              Left = 253
+              Top = 149
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Edit18: TEdit
+              Left = 200
+              Top = 30
+              Width = 81
+              Height = 23
+              TabOrder = 0
+              Text = '1.0000'
+              OnChange = Edit18Change
+              OnExit = Edit18Exit
+              OnKeyPress = Edit18KeyPress
+            end
+            object Edit20: TEdit
+              Left = 200
+              Top = 54
+              Width = 81
+              Height = 23
+              TabOrder = 1
+              Text = '1.0000'
+              OnChange = Edit18Change
+              OnExit = Edit18Exit
+              OnKeyPress = Edit18KeyPress
+            end
+            object Edit31: TEdit
+              Left = 200
+              Top = 78
+              Width = 81
+              Height = 23
+              TabOrder = 2
+              Text = '1.0000'
+              OnChange = Edit18Change
+              OnExit = Edit18Exit
+              OnKeyPress = Edit18KeyPress
+            end
+            object ComboBox10: TComboBox
+              Left = 201
+              Top = 121
+              Width = 49
+              Height = 23
+              Hint = 
+                'In dem hier definierten Bereich, vor erreichen der'#13#10'Zieltemperat' +
+                'ur wirkt die Gradientbegrenzung und/oder '#13#10'das Takten'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 20
+              TabOrder = 3
+              Text = '2.0'
+              Items.Strings = (
+                '0.0'
+                '0.1'
+                '0.2'
+                '0.3'
+                '0.4'
+                '0.5'
+                '0.6'
+                '0.7'
+                '0.8'
+                '0.9'
+                '1.0'
+                '1.1'
+                '1.2'
+                '1.3'
+                '1.4'
+                '1.5'
+                '1.6'
+                '1.7'
+                '1.8'
+                '1.9'
+                '2.0'
+                '2.1'
+                '2.2'
+                '2.3'
+                '2.4'
+                '2.5'
+                '2.6'
+                '2.7'
+                '2.8'
+                '2.9'
+                '3.0'
+                '3.1'
+                '3.2'
+                '3.3'
+                '3.4'
+                '3.5'
+                '3.6'
+                '3.7'
+                '3.8'
+                '3.9'
+                '4.0'
+                '4.1'
+                '4.2'
+                '4.3'
+                '4.4'
+                '4.5'
+                '4.6'
+                '4.7'
+                '4.8'
+                '4.9'
+                '5.0'
+                '5.1'
+                '5.2'
+                '5.3'
+                '5.4'
+                '5.5'
+                '5.6'
+                '5.7'
+                '5.8'
+                '5.9'
+                '6.0'
+                '6.1'
+                '6.2'
+                '6.3'
+                '6.4'
+                '6.5'
+                '6.6'
+                '6.7'
+                '6.8'
+                '6.9'
+                '7.0'
+                '7.1'
+                '7.2'
+                '7.3'
+                '7.4'
+                '7.5'
+                '7.6'
+                '7.7'
+                '7.8'
+                '7.9'
+                '8.0'
+                '8.1'
+                '8.2'
+                '8.3'
+                '8.4'
+                '8.5'
+                '8.6'
+                '8.7'
+                '8.8'
+                '8.9'
+                '9.0'
+                '9.1'
+                '9.2'
+                '9.3'
+                '9.4'
+                '9.5'
+                '9.6'
+                '9.7'
+                '9.8'
+                '9.9'
+                '10.0'
+                '10.1'
+                '10.2'
+                '10.3'
+                '10.4'
+                '10.5'
+                '10.6'
+                '10.7'
+                '10.8'
+                '10.9'
+                '11.0'
+                '11.1'
+                '11.2'
+                '11.3'
+                '11.4'
+                '11.5'
+                '11.6'
+                '11.7'
+                '11.8'
+                '11.9'
+                '12.0'
+                '12.1'
+                '12.2'
+                '12.3'
+                '12.4'
+                '12.5'
+                '12.6'
+                '12.7'
+                '12.8'
+                '12.9'
+                '13.0'
+                '13.1'
+                '13.2'
+                '13.3'
+                '13.4'
+                '13.5'
+                '13.6'
+                '13.7'
+                '13.8'
+                '13.9'
+                '14.0'
+                '14.1'
+                '14.2'
+                '14.3'
+                '14.4'
+                '14.5'
+                '14.6'
+                '14.7'
+                '14.8'
+                '14.9'
+                '15.0'
+                '15.1'
+                '15.2'
+                '15.3'
+                '15.4'
+                '15.5'
+                '15.6'
+                '15.7'
+                '15.8'
+                '15.9'
+                '16.0'
+                '16.1'
+                '16.2'
+                '16.3'
+                '16.4'
+                '16.5'
+                '16.6'
+                '16.7'
+                '16.8'
+                '16.9'
+                '17.0'
+                '17.1'
+                '17.2'
+                '17.3'
+                '17.4'
+                '17.5'
+                '17.6'
+                '17.7'
+                '17.8'
+                '17.9'
+                '18.0'
+                '18.1'
+                '18.2'
+                '18.3'
+                '18.4'
+                '18.5'
+                '18.6'
+                '18.7'
+                '18.8'
+                '18.9'
+                '19.0'
+                '19.1'
+                '19.2'
+                '19.3'
+                '19.4'
+                '19.5'
+                '19.6'
+                '19.7'
+                '19.8'
+                '19.9'
+                '20.0'
+                '20.1'
+                '20.2'
+                '20.3'
+                '20.4'
+                '20.5'
+                '20.6'
+                '20.7'
+                '20.8'
+                '20.9'
+                '21.0'
+                '21.1'
+                '21.2'
+                '21.3'
+                '21.4'
+                '21.5'
+                '21.6'
+                '21.7'
+                '21.8'
+                '21.9'
+                '22.0'
+                '22.1'
+                '22.2'
+                '22.3'
+                '22.4'
+                '22.5'
+                '22.6'
+                '22.7'
+                '22.8'
+                '22.9'
+                '23.0'
+                '23.1'
+                '23.2'
+                '23.3'
+                '23.4'
+                '23.5'
+                '23.6'
+                '23.7'
+                '23.8'
+                '23.9'
+                '24.0'
+                '24.1'
+                '24.2'
+                '24.3'
+                '24.4'
+                '24.5'
+                '24.6'
+                '24.7'
+                '24.8'
+                '24.9'
+                '25.0'
+                '25.1'
+                '25.2'
+                '25.3'
+                '25.4'
+                '25.5'
+                '25.6'
+                '25.7'
+                '25.8'
+                '25.9'
+                '26.0'
+                '26.1'
+                '26.2'
+                '26.3'
+                '26.4'
+                '26.5'
+                '26.6'
+                '26.7'
+                '26.8'
+                '26.9'
+                '27.0'
+                '27.1'
+                '27.2'
+                '27.3'
+                '27.4'
+                '27.5'
+                '27.6'
+                '27.7'
+                '27.8'
+                '27.9'
+                '28.0'
+                '28.1'
+                '28.2'
+                '28.3'
+                '28.4'
+                '28.5'
+                '28.6'
+                '28.7'
+                '28.8'
+                '28.9'
+                '29.0'
+                '29.1'
+                '29.2'
+                '29.3'
+                '29.4'
+                '29.5'
+                '29.6'
+                '29.7'
+                '29.8'
+                '29.9'
+                '30.0'
+                '30.1'
+                '30.2'
+                '30.3'
+                '30.4'
+                '30.5'
+                '30.6'
+                '30.7'
+                '30.8'
+                '30.9'
+                '31.0'
+                '31.1'
+                '31.2'
+                '31.3'
+                '31.4'
+                '31.5'
+                '31.6'
+                '31.7'
+                '31.8'
+                '31.9'
+                '32.0'
+                '32.1'
+                '32.2'
+                '32.3'
+                '32.4'
+                '32.5'
+                '32.6'
+                '32.7'
+                '32.8'
+                '32.9'
+                '33.0'
+                '33.1'
+                '33.2'
+                '33.3'
+                '33.4'
+                '33.5'
+                '33.6'
+                '33.7'
+                '33.8'
+                '33.9'
+                '34.0'
+                '34.1'
+                '34.2'
+                '34.3'
+                '34.4'
+                '34.5'
+                '34.6'
+                '34.7'
+                '34.8'
+                '34.9'
+                '35.0'
+                '35.1'
+                '35.2'
+                '35.3'
+                '35.4'
+                '35.5'
+                '35.6'
+                '35.7'
+                '35.8'
+                '35.9'
+                '36.0'
+                '36.1'
+                '36.2'
+                '36.3'
+                '36.4'
+                '36.5'
+                '36.6'
+                '36.7'
+                '36.8'
+                '36.9'
+                '37.0'
+                '37.1'
+                '37.2'
+                '37.3'
+                '37.4'
+                '37.5'
+                '37.6'
+                '37.7'
+                '37.8'
+                '37.9'
+                '38.0'
+                '38.1'
+                '38.2'
+                '38.3'
+                '38.4'
+                '38.5'
+                '38.6'
+                '38.7'
+                '38.8'
+                '38.9'
+                '39.0'
+                '39.1'
+                '39.2'
+                '39.3'
+                '39.4'
+                '39.5'
+                '39.6'
+                '39.7'
+                '39.8'
+                '39.9'
+                '40.0'
+                '40.1'
+                '40.2'
+                '40.3'
+                '40.4'
+                '40.5'
+                '40.6'
+                '40.7'
+                '40.8'
+                '40.9'
+                '41.0'
+                '41.1'
+                '41.2'
+                '41.3'
+                '41.4'
+                '41.5'
+                '41.6'
+                '41.7'
+                '41.8'
+                '41.9'
+                '42.0'
+                '42.1'
+                '42.2'
+                '42.3'
+                '42.4'
+                '42.5'
+                '42.6'
+                '42.7'
+                '42.8'
+                '42.9'
+                '43.0'
+                '43.1'
+                '43.2'
+                '43.3'
+                '43.4'
+                '43.5'
+                '43.6'
+                '43.7'
+                '43.8'
+                '43.9'
+                '44.0'
+                '44.1'
+                '44.2'
+                '44.3'
+                '44.4'
+                '44.5'
+                '44.6'
+                '44.7'
+                '44.8'
+                '44.9'
+                '45.0'
+                '45.1'
+                '45.2'
+                '45.3'
+                '45.4'
+                '45.5'
+                '45.6'
+                '45.7'
+                '45.8'
+                '45.9'
+                '46.0'
+                '46.1'
+                '46.2'
+                '46.3'
+                '46.4'
+                '46.5'
+                '46.6'
+                '46.7'
+                '46.8'
+                '46.9'
+                '47.0'
+                '47.1'
+                '47.2'
+                '47.3'
+                '47.4'
+                '47.5'
+                '47.6'
+                '47.7'
+                '47.8'
+                '47.9'
+                '48.0'
+                '48.1'
+                '48.2'
+                '48.3'
+                '48.4'
+                '48.5'
+                '48.6'
+                '48.7'
+                '48.8'
+                '48.9'
+                '49.0'
+                '49.1'
+                '49.2'
+                '49.3'
+                '49.4'
+                '49.5'
+                '49.6'
+                '49.7'
+                '49.8'
+                '49.9'
+                '50.0'
+                '50.1'
+                '50.2'
+                '50.3'
+                '50.4'
+                '50.5'
+                '50.6'
+                '50.7'
+                '50.8'
+                '50.9'
+                '51.0'
+                '51.1'
+                '51.2'
+                '51.3'
+                '51.4'
+                '51.5'
+                '51.6'
+                '51.7'
+                '51.8'
+                '51.9'
+                '52.0'
+                '52.1'
+                '52.2'
+                '52.3'
+                '52.4'
+                '52.5'
+                '52.6'
+                '52.7'
+                '52.8'
+                '52.9'
+                '53.0'
+                '53.1'
+                '53.2'
+                '53.3'
+                '53.4'
+                '53.5'
+                '53.6'
+                '53.7'
+                '53.8'
+                '53.9'
+                '54.0'
+                '54.1'
+                '54.2'
+                '54.3'
+                '54.4'
+                '54.5'
+                '54.6'
+                '54.7'
+                '54.8'
+                '54.9'
+                '55.0'
+                '55.1'
+                '55.2'
+                '55.3'
+                '55.4'
+                '55.5'
+                '55.6'
+                '55.7'
+                '55.8'
+                '55.9'
+                '56.0'
+                '56.1'
+                '56.2'
+                '56.3'
+                '56.4'
+                '56.5'
+                '56.6'
+                '56.7'
+                '56.8'
+                '56.9'
+                '57.0'
+                '57.1'
+                '57.2'
+                '57.3'
+                '57.4'
+                '57.5'
+                '57.6'
+                '57.7'
+                '57.8'
+                '57.9'
+                '58.0'
+                '58.1'
+                '58.2'
+                '58.3'
+                '58.4'
+                '58.5'
+                '58.6'
+                '58.7'
+                '58.8'
+                '58.9'
+                '59.0'
+                '59.1'
+                '59.2'
+                '59.3'
+                '59.4'
+                '59.5'
+                '59.6'
+                '59.7'
+                '59.8'
+                '59.9'
+                '60.0'
+                '60.1'
+                '60.2'
+                '60.3'
+                '60.4'
+                '60.5'
+                '60.6'
+                '60.7'
+                '60.8'
+                '60.9'
+                '61.0'
+                '61.1'
+                '61.2'
+                '61.3'
+                '61.4'
+                '61.5'
+                '61.6'
+                '61.7'
+                '61.8'
+                '61.9'
+                '62.0'
+                '62.1'
+                '62.2'
+                '62.3'
+                '62.4'
+                '62.5'
+                '62.6'
+                '62.7'
+                '62.8'
+                '62.9'
+                '63.0'
+                '63.1'
+                '63.2'
+                '63.3'
+                '63.4'
+                '63.5'
+                '63.6'
+                '63.7'
+                '63.8'
+                '63.9'
+                '64.0'
+                '64.1'
+                '64.2'
+                '64.3'
+                '64.4'
+                '64.5'
+                '64.6'
+                '64.7'
+                '64.8'
+                '64.9'
+                '65.0'
+                '65.1'
+                '65.2'
+                '65.3'
+                '65.4'
+                '65.5'
+                '65.6'
+                '65.7'
+                '65.8'
+                '65.9'
+                '66.0'
+                '66.1'
+                '66.2'
+                '66.3'
+                '66.4'
+                '66.5'
+                '66.6'
+                '66.7'
+                '66.8'
+                '66.9'
+                '67.0'
+                '67.1'
+                '67.2'
+                '67.3'
+                '67.4'
+                '67.5'
+                '67.6'
+                '67.7'
+                '67.8'
+                '67.9'
+                '68.0'
+                '68.1'
+                '68.2'
+                '68.3'
+                '68.4'
+                '68.5'
+                '68.6'
+                '68.7'
+                '68.8'
+                '68.9'
+                '69.0'
+                '69.1'
+                '69.2'
+                '69.3'
+                '69.4'
+                '69.5'
+                '69.6'
+                '69.7'
+                '69.8'
+                '69.9'
+                '70.0'
+                '70.1'
+                '70.2'
+                '70.3'
+                '70.4'
+                '70.5'
+                '70.6'
+                '70.7'
+                '70.8'
+                '70.9'
+                '71.0'
+                '71.1'
+                '71.2'
+                '71.3'
+                '71.4'
+                '71.5'
+                '71.6'
+                '71.7'
+                '71.8'
+                '71.9'
+                '72.0'
+                '72.1'
+                '72.2'
+                '72.3'
+                '72.4'
+                '72.5'
+                '72.6'
+                '72.7'
+                '72.8'
+                '72.9'
+                '73.0'
+                '73.1'
+                '73.2'
+                '73.3'
+                '73.4'
+                '73.5'
+                '73.6'
+                '73.7'
+                '73.8'
+                '73.9'
+                '74.0'
+                '74.1'
+                '74.2'
+                '74.3'
+                '74.4'
+                '74.5'
+                '74.6'
+                '74.7'
+                '74.8'
+                '74.9'
+                '75.0'
+                '75.1'
+                '75.2'
+                '75.3'
+                '75.4'
+                '75.5'
+                '75.6'
+                '75.7'
+                '75.8'
+                '75.9'
+                '76.0'
+                '76.1'
+                '76.2'
+                '76.3'
+                '76.4'
+                '76.5'
+                '76.6'
+                '76.7'
+                '76.8'
+                '76.9'
+                '77.0'
+                '77.1'
+                '77.2'
+                '77.3'
+                '77.4'
+                '77.5'
+                '77.6'
+                '77.7'
+                '77.8'
+                '77.9'
+                '78.0'
+                '78.1'
+                '78.2'
+                '78.3'
+                '78.4'
+                '78.5'
+                '78.6'
+                '78.7'
+                '78.8'
+                '78.9'
+                '79.0'
+                '79.1'
+                '79.2'
+                '79.3'
+                '79.4'
+                '79.5'
+                '79.6'
+                '79.7'
+                '79.8'
+                '79.9'
+                '80.0'
+                '80.1'
+                '80.2'
+                '80.3'
+                '80.4'
+                '80.5'
+                '80.6'
+                '80.7'
+                '80.8'
+                '80.9'
+                '81.0'
+                '81.1'
+                '81.2'
+                '81.3'
+                '81.4'
+                '81.5'
+                '81.6'
+                '81.7'
+                '81.8'
+                '81.9'
+                '82.0'
+                '82.1'
+                '82.2'
+                '82.3'
+                '82.4'
+                '82.5'
+                '82.6'
+                '82.7'
+                '82.8'
+                '82.9'
+                '83.0'
+                '83.1'
+                '83.2'
+                '83.3'
+                '83.4'
+                '83.5'
+                '83.6'
+                '83.7'
+                '83.8'
+                '83.9'
+                '84.0'
+                '84.1'
+                '84.2'
+                '84.3'
+                '84.4'
+                '84.5'
+                '84.6'
+                '84.7'
+                '84.8'
+                '84.9'
+                '85.0'
+                '85.1'
+                '85.2'
+                '85.3'
+                '85.4'
+                '85.5'
+                '85.6'
+                '85.7'
+                '85.8'
+                '85.9'
+                '86.0'
+                '86.1'
+                '86.2'
+                '86.3'
+                '86.4'
+                '86.5'
+                '86.6'
+                '86.7'
+                '86.8'
+                '86.9'
+                '87.0'
+                '87.1'
+                '87.2'
+                '87.3'
+                '87.4'
+                '87.5'
+                '87.6'
+                '87.7'
+                '87.8'
+                '87.9'
+                '88.0'
+                '88.1'
+                '88.2'
+                '88.3'
+                '88.4'
+                '88.5'
+                '88.6'
+                '88.7'
+                '88.8'
+                '88.9'
+                '89.0'
+                '89.1'
+                '89.2'
+                '89.3'
+                '89.4'
+                '89.5'
+                '89.6'
+                '89.7'
+                '89.8'
+                '89.9'
+                '90.0'
+                '90.1'
+                '90.2'
+                '90.3'
+                '90.4'
+                '90.5'
+                '90.6'
+                '90.7'
+                '90.8'
+                '90.9'
+                '91.0'
+                '91.1'
+                '91.2'
+                '91.3'
+                '91.4'
+                '91.5'
+                '91.6'
+                '91.7'
+                '91.8'
+                '91.9'
+                '92.0'
+                '92.1'
+                '92.2'
+                '92.3'
+                '92.4'
+                '92.5'
+                '92.6'
+                '92.7'
+                '92.8'
+                '92.9'
+                '93.0'
+                '93.1'
+                '93.2'
+                '93.3'
+                '93.4'
+                '93.5'
+                '93.6'
+                '93.7'
+                '93.8'
+                '93.9'
+                '94.0'
+                '94.1'
+                '94.2'
+                '94.3'
+                '94.4'
+                '94.5'
+                '94.6'
+                '94.7'
+                '94.8'
+                '94.9'
+                '95.0'
+                '95.1'
+                '95.2'
+                '95.3'
+                '95.4'
+                '95.5'
+                '95.6'
+                '95.7'
+                '95.8'
+                '95.9'
+                '96.0'
+                '96.1'
+                '96.2'
+                '96.3'
+                '96.4'
+                '96.5'
+                '96.6'
+                '96.7'
+                '96.8'
+                '96.9'
+                '97.0'
+                '97.1'
+                '97.2'
+                '97.3'
+                '97.4'
+                '97.5'
+                '97.6'
+                '97.7'
+                '97.8'
+                '97.9'
+                '98.0'
+                '98.1'
+                '98.2'
+                '98.3'
+                '98.4'
+                '98.5'
+                '98.6'
+                '98.7'
+                '98.8'
+                '98.9'
+                '99.0'
+                '99.1'
+                '99.2'
+                '99.3'
+                '99.4'
+                '99.5'
+                '99.6'
+                '99.7'
+                '99.8'
+                '99.9')
+            end
+            object Edit32: TEdit
+              Left = 201
+              Top = 145
+              Width = 48
+              Height = 23
+              TabOrder = 4
+              Text = '20'
+              OnChange = Edit32Change
+              OnExit = Edit32Exit
+              OnKeyPress = Edit32KeyPress
+            end
+          end
+          object GroupBox6: TGroupBox
+            Left = 8
+            Top = 8
+            Width = 433
+            Height = 457
+            Caption = 'Heizparameter'
+            TabOrder = 0
+            object Label112: TLabel
+              Left = 21
+              Top = 324
+              Width = 109
+              Height = 15
+              Caption = 'Heizungshysterese:'
+            end
+            object Label113: TLabel
+              Left = 283
+              Top = 325
+              Width = 8
+              Height = 15
+              Caption = 'K'
+            end
+            object Label95: TLabel
+              Left = 283
+              Top = 351
+              Width = 8
+              Height = 15
+              Caption = 'K'
+            end
+            object Label98: TLabel
+              Left = 21
+              Top = 351
+              Width = 110
+              Height = 15
+              Caption = 'K'#252'hlungshysterese:'
+            end
+            object Label88: TLabel
+              Left = 20
+              Top = 248
+              Width = 129
+              Height = 15
+              Caption = 'Puls- / Gradientbereich:'
+            end
+            object Label90: TLabel
+              Left = 284
+              Top = 248
+              Width = 8
+              Height = 15
+              Caption = 'K'
+            end
+            object Label81: TLabel
+              Left = 20
+              Top = 96
+              Width = 45
+              Height = 15
+              Caption = 'Puls bis'
+            end
+            object Label86: TLabel
+              Left = 284
+              Top = 96
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label87: TLabel
+              Left = 172
+              Top = 76
+              Width = 18
+              Height = 15
+              Caption = 'Ein'
+            end
+            object Label89: TLabel
+              Left = 236
+              Top = 76
+              Width = 21
+              Height = 15
+              Caption = 'Aus'
+            end
+            object Label93: TLabel
+              Left = 284
+              Top = 144
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label94: TLabel
+              Left = 284
+              Top = 120
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label96: TLabel
+              Left = 20
+              Top = 120
+              Width = 45
+              Height = 15
+              Caption = 'Puls bis'
+            end
+            object Label97: TLabel
+              Left = 284
+              Top = 192
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label100: TLabel
+              Left = 284
+              Top = 168
+              Width = 23
+              Height = 15
+              Caption = 'sek.'
+            end
+            object Label102: TLabel
+              Left = 20
+              Top = 168
+              Width = 45
+              Height = 15
+              Caption = 'Puls bis'
+            end
+            object Label104: TLabel
+              Left = 20
+              Top = 144
+              Width = 45
+              Height = 15
+              Caption = 'Puls bis'
+            end
+            object Label107: TLabel
+              Left = 20
+              Top = 192
+              Width = 45
+              Height = 15
+              Caption = 'Puls bis'
+            end
+            object Label109: TLabel
+              Left = 20
+              Top = 220
+              Width = 112
+              Height = 15
+              Caption = 'Zul'#228'ssiger Gradient:'
+            end
+            object Label110: TLabel
+              Left = 279
+              Top = 220
+              Width = 41
+              Height = 15
+              Caption = 'K / min.'
+            end
+            object Label130: TLabel
+              Left = 100
+              Top = 95
+              Width = 17
+              Height = 15
+              Caption = #176'C:'
+            end
+            object Label131: TLabel
+              Left = 100
+              Top = 119
+              Width = 17
+              Height = 15
+              Caption = #176'C:'
+            end
+            object Label132: TLabel
+              Left = 100
+              Top = 143
+              Width = 17
+              Height = 15
+              Caption = #176'C:'
+            end
+            object Label133: TLabel
+              Left = 100
+              Top = 167
+              Width = 17
+              Height = 15
+              Caption = #176'C:'
+            end
+            object Label134: TLabel
+              Left = 100
+              Top = 191
+              Width = 17
+              Height = 15
+              Caption = #176'C:'
+            end
             object ComboBox26: TComboBox
-              Left = 176
-              Top = 302
+              Left = 227
+              Top = 321
               Width = 49
               Height = 23
               Hint = 
@@ -13635,8 +14984,8 @@ object Form1: TForm1
                 #9)
             end
             object ComboBox29: TComboBox
-              Left = 176
-              Top = 329
+              Left = 227
+              Top = 348
               Width = 49
               Height = 23
               Hint = 
@@ -13683,8 +15032,8 @@ object Form1: TForm1
                 #9)
             end
             object CheckBox37: TCheckBox
-              Left = 16
-              Top = 280
+              Left = 19
+              Top = 299
               Width = 209
               Height = 17
               Hint = 
@@ -13705,8 +15054,8 @@ object Form1: TForm1
               TabOrder = 19
             end
             object ComboBox13: TComboBox
-              Left = 176
-              Top = 241
+              Left = 227
+              Top = 244
               Width = 49
               Height = 23
               Hint = 
@@ -14720,8 +16069,8 @@ object Form1: TForm1
                 '99.9')
             end
             object ComboBox14: TComboBox
-              Left = 120
-              Top = 89
+              Left = 163
+              Top = 92
               Width = 49
               Height = 23
               Hint = 'Pulsweite im Temperaturbereich'
@@ -14835,8 +16184,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox15: TComboBox
-              Left = 176
-              Top = 89
+              Left = 227
+              Top = 92
               Width = 49
               Height = 23
               Hint = 'Pausenweite im Temperaturbereich'
@@ -14950,8 +16299,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox17: TComboBox
-              Left = 120
-              Top = 113
+              Left = 163
+              Top = 116
               Width = 49
               Height = 23
               Hint = 'Pulsweite im Temperaturbereich'
@@ -15065,8 +16414,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox18: TComboBox
-              Left = 176
-              Top = 113
+              Left = 227
+              Top = 116
               Width = 49
               Height = 23
               Hint = 'Pausenweite im Temperaturbereich'
@@ -15180,8 +16529,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox19: TComboBox
-              Left = 120
-              Top = 137
+              Left = 163
+              Top = 140
               Width = 49
               Height = 23
               Hint = 'Pulsweite im Temperaturbereich'
@@ -15295,8 +16644,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox20: TComboBox
-              Left = 176
-              Top = 137
+              Left = 227
+              Top = 140
               Width = 49
               Height = 23
               Hint = 'Pausenweite im Temperaturbereich'
@@ -15410,8 +16759,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox21: TComboBox
-              Left = 120
-              Top = 161
+              Left = 163
+              Top = 164
               Width = 49
               Height = 23
               Hint = 'Pulsweite im Temperaturbereich'
@@ -15525,8 +16874,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox22: TComboBox
-              Left = 176
-              Top = 161
+              Left = 227
+              Top = 164
               Width = 49
               Height = 23
               Hint = 'Pausenweite im Temperaturbereich'
@@ -15640,8 +16989,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox23: TComboBox
-              Left = 176
-              Top = 185
+              Left = 227
+              Top = 188
               Width = 49
               Height = 23
               Hint = 'Pausenweite im Temperaturbereich'
@@ -15755,8 +17104,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox24: TComboBox
-              Left = 120
-              Top = 185
+              Left = 163
+              Top = 188
               Width = 49
               Height = 23
               Hint = 'Pulsweite im Temperaturbereich'
@@ -15870,8 +17219,8 @@ object Form1: TForm1
                 '')
             end
             object ComboBox25: TComboBox
-              Left = 176
-              Top = 213
+              Left = 227
+              Top = 216
               Width = 49
               Height = 23
               Hint = 
@@ -15915,8 +17264,8 @@ object Form1: TForm1
                 '3.0')
             end
             object Edit84: TEdit
-              Left = 69
-              Top = 113
+              Left = 72
+              Top = 116
               Width = 25
               Height = 23
               Hint = 'Temperaturbereich f'#252'r Pulsstufe'
@@ -15924,8 +17273,8 @@ object Form1: TForm1
               Text = '70'
             end
             object Edit85: TEdit
-              Left = 69
-              Top = 137
+              Left = 72
+              Top = 140
               Width = 25
               Height = 23
               Hint = 'Temperaturbereich f'#252'r Pulsstufe'
@@ -15933,8 +17282,8 @@ object Form1: TForm1
               Text = '80'
             end
             object Edit86: TEdit
-              Left = 69
-              Top = 161
+              Left = 72
+              Top = 164
               Width = 25
               Height = 23
               Hint = 'Temperaturbereich f'#252'r Pulsstufe'
@@ -15942,8 +17291,8 @@ object Form1: TForm1
               Text = '90'
             end
             object Edit87: TEdit
-              Left = 66
-              Top = 185
+              Left = 69
+              Top = 188
               Width = 29
               Height = 23
               Hint = 'Temperaturbereich f'#252'r Pulsstufe'
@@ -15953,18 +17302,18 @@ object Form1: TForm1
               Text = '100'
             end
             object Edit88: TEdit
-              Left = 68
-              Top = 89
+              Left = 71
+              Top = 116
               Width = 25
               Height = 23
               TabStop = False
-              TabOrder = 27
+              TabOrder = 22
               Text = '0'
               Visible = False
             end
             object Edit83: TEdit
-              Left = 69
-              Top = 89
+              Left = 72
+              Top = 92
               Width = 25
               Height = 23
               Hint = 'Temperaturbereich f'#252'r Pulsstufe'
@@ -15972,8 +17321,8 @@ object Form1: TForm1
               Text = '60'
             end
             object CheckBox36: TCheckBox
-              Left = 16
-              Top = 49
+              Left = 19
+              Top = 52
               Width = 265
               Height = 19
               Hint = 
@@ -15994,8 +17343,8 @@ object Form1: TForm1
               TabOrder = 1
             end
             object CheckBox34: TCheckBox
-              Left = 16
-              Top = 24
+              Left = 19
+              Top = 27
               Width = 201
               Height = 17
               Hint = 
@@ -16014,216 +17363,23 @@ object Form1: TForm1
               State = cbChecked
               TabOrder = 0
             end
-            object CheckBox7: TCheckBox
-              Left = 16
-              Top = 366
-              Width = 361
-              Height = 17
-              Caption = 'Zum Erreichen und Halten der Kochtemperatur dauerheizen'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -12
-              Font.Name = 'Arial'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 22
-            end
-            object CheckBox6: TCheckBox
-              Left = 16
-              Top = 477
-              Width = 153
-              Height = 17
-              Hint = 
-                'Die Heizung wird nach 100 Minuten '#13#10'Dauerbetrieb f'#252'r 5 Sekunden ' +
-                'ausgeschaltet.'
-              Caption = 'Hendi 2h Unterbrecher'
-              Checked = True
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -12
-              Font.Name = 'Arial'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              State = cbChecked
-              TabOrder = 26
-            end
           end
-          object GroupBox7: TGroupBox
-            Left = 456
-            Top = 192
-            Width = 417
-            Height = 121
-            Caption = 'Alarmparameter'
-            TabOrder = 2
-            object Label159: TLabel
-              Left = 22
-              Top = 37
-              Width = 91
-              Height = 15
-              Caption = 'Alarmpulsdauer:'
-            end
-            object Label160: TLabel
-              Left = 21
-              Top = 74
-              Width = 102
-              Height = 15
-              Caption = 'Alarmpausedauer:'
-            end
-            object TrackBar2: TTrackBar
-              Left = 186
-              Top = 33
-              Width = 97
-              Height = 26
-              Max = 110
-              Min = 10
-              Frequency = 10
-              Position = 10
-              TabOrder = 0
-            end
-            object TrackBar3: TTrackBar
-              Left = 186
-              Top = 71
-              Width = 97
-              Height = 26
-              Max = 100
-              Frequency = 10
-              Position = 5
-              TabOrder = 1
-            end
-          end
-          object GroupBox8: TGroupBox
-            Left = 456
-            Top = 8
-            Width = 417
-            Height = 177
-            Caption = 'R'#252'hrwerkparameter'
-            TabOrder = 1
-            object Label154: TLabel
-              Left = 20
-              Top = 102
-              Width = 106
-              Height = 15
-              Caption = 'Ausschaltverz'#246'gert:'
-            end
-            object Label153: TLabel
-              Left = 20
-              Top = 78
-              Width = 103
-              Height = 15
-              Caption = 'Einschaltverz'#246'gert:'
-            end
-            object ComboBox45: TComboBox
-              Left = 187
-              Top = 74
-              Width = 105
-              Height = 23
-              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
-              Style = csDropDownList
-              ItemHeight = 15
-              ItemIndex = 0
-              TabOrder = 1
-              Text = '0 Sekunden'
-              OnChange = ComboBox45Change
-              Items.Strings = (
-                '0 Sekunden'
-                '5 Sekunden'
-                '10 Sekunden'
-                '30 Sekunden'
-                '1 Minute'
-                '2 Minuten'
-                '5 Minuten')
-            end
-            object ComboBox3: TComboBox
-              Left = 187
-              Top = 98
-              Width = 105
-              Height = 23
-              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
-              Style = csDropDownList
-              ItemHeight = 15
-              ItemIndex = 0
-              TabOrder = 2
-              Text = '0 Sekunden'
-              OnChange = ComboBox3Change
-              Items.Strings = (
-                '0 Sekunden'
-                '5 Sekunden'
-                '10 Sekunden'
-                '30 Sekunden'
-                '1 Minute'
-                '2 Minuten'
-                '5 Minuten')
-            end
-            object CheckBox42: TCheckBox
-              Left = 19
-              Top = 27
-              Width = 374
-              Height = 17
-              Caption = 'R'#252'hrwerk gepulst an Heizung koppeln, sonst R'#252'hrwerk aus'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -12
-              Font.Name = 'Arial'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 0
-              OnClick = CheckBox42Click
-            end
-            object CheckBox43: TCheckBox
-              Left = 19
-              Top = 144
-              Width = 366
-              Height = 17
-              Caption = 'R'#252'hrwerk durchgehend AN in Aufheizphasen in Rasten pulsen'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -12
-              Font.Name = 'Arial'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 3
-              OnClick = CheckBox43Click
-            end
-            object CheckBox45: TCheckBox
-              Left = 19
-              Top = 51
-              Width = 390
-              Height = 17
-              Caption = 'R'#252'hrwerk dauer AN an Heizung koppeln, sonst R'#252'hrwerk pulsen'
-              Font.Charset = DEFAULT_CHARSET
-              Font.Color = clWindowText
-              Font.Height = -12
-              Font.Name = 'Arial'
-              Font.Style = []
-              ParentFont = False
-              ParentShowHint = False
-              ShowHint = True
-              TabOrder = 4
-              OnClick = CheckBox45Click
-            end
-          end
-          object Button9: TButton
-            Left = 680
-            Top = 464
-            Width = 195
-            Height = 41
-            Caption = 'Einstellungen zur'#252'cksetzen'
-            Font.Charset = ANSI_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -15
-            Font.Name = 'MS Sans Serif'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 3
-            OnClick = Button9Click
+          object ComboBox2: TComboBox
+            Left = 259
+            Top = 428
+            Width = 166
+            Height = 23
+            Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+            Style = csDropDownList
+            ItemHeight = 15
+            ItemIndex = 0
+            TabOrder = 5
+            Text = 'Manuell Parametrierung'
+            Visible = False
+            OnChange = ComboBox2Change
+            Items.Strings = (
+              'Manuell Parametrierung'
+              'PID-Kontroller')
           end
         end
       end
@@ -16452,8 +17608,8 @@ object Form1: TForm1
       Caption = 'Hilfe'
       ImageIndex = 5
       object WebBrowser1: TWebBrowser
-        Left = 8
-        Top = 8
+        Left = 0
+        Top = 0
         Width = 889
         Height = 561
         ParentShowHint = False
@@ -16479,6 +17635,98 @@ object Form1: TForm1
         Width = 153
         Height = 23
         TabOrder = 2
+      end
+      object Edit33: TEdit
+        Left = 712
+        Top = 72
+        Width = 153
+        Height = 23
+        TabOrder = 3
+        Text = 'DebugCode'
+        OnChange = Edit33Change
+      end
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'Debug'
+      ImageIndex = 5
+      object Label45: TLabel
+        Left = 8
+        Top = 10
+        Width = 72
+        Height = 15
+        Caption = 'getTickCount'
+      end
+      object Label46: TLabel
+        Left = 8
+        Top = 34
+        Width = 20
+        Height = 15
+        Caption = 'Zeit'
+      end
+      object Label47: TLabel
+        Left = 8
+        Top = 82
+        Width = 44
+        Height = 15
+        Caption = 'Restzeit'
+      end
+      object Label48: TLabel
+        Left = 8
+        Top = 58
+        Width = 39
+        Height = 15
+        Caption = 'Sollzeit'
+      end
+      object Label49: TLabel
+        Left = 8
+        Top = 106
+        Width = 54
+        Height = 15
+        Caption = 'Pausezeit'
+      end
+      object Edit34: TEdit
+        Left = 88
+        Top = 8
+        Width = 137
+        Height = 23
+        TabOrder = 0
+      end
+      object Edit35: TEdit
+        Left = 88
+        Top = 32
+        Width = 137
+        Height = 23
+        TabOrder = 1
+      end
+      object Edit36: TEdit
+        Left = 88
+        Top = 56
+        Width = 137
+        Height = 23
+        TabOrder = 2
+      end
+      object Edit37: TEdit
+        Left = 88
+        Top = 80
+        Width = 137
+        Height = 23
+        TabOrder = 3
+      end
+      object Edit38: TEdit
+        Left = 88
+        Top = 104
+        Width = 137
+        Height = 23
+        TabOrder = 4
+      end
+      object Button1: TButton
+        Left = 8
+        Top = 520
+        Width = 75
+        Height = 25
+        Caption = 'Start'
+        TabOrder = 5
+        OnClick = Button1Click
       end
     end
   end
@@ -16826,7 +18074,7 @@ object Form1: TForm1
     Enabled = False
     Interval = 100
     OnTimer = AusgabeTimerTimer
-    Left = 444
+    Left = 880
   end
   object LogUpdateTimer: TTimer
     Enabled = False
@@ -16858,7 +18106,7 @@ object Form1: TForm1
   end
   object IdHTTP1: TIdHTTP
     MaxLineAction = maException
-    ReadTimeout = 0
+    ReadTimeout = 1000
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -16898,9 +18146,10 @@ object Form1: TForm1
   end
   object IdHTTP2: TIdHTTP
     MaxLineAction = maException
-    ReadTimeout = 200
+    ReadTimeout = 1000
     AuthRetries = 0
-    AllowCookies = True
+    AllowCookies = False
+    ProtocolVersion = pv1_0
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
     Request.ContentLength = -1
@@ -16910,8 +18159,18 @@ object Form1: TForm1
     Request.Accept = 'text/html, */*'
     Request.BasicAuthentication = False
     Request.UserAgent = 'Mozilla/3.0 (compatible; Indy Library)'
-    HTTPOptions = [hoForceEncodeParams]
+    HTTPOptions = []
     Left = 887
     Top = 526
+  end
+  object PIDTimer: TTimer
+    Interval = 300
+    OnTimer = PIDTimerTimer
+    Left = 816
+  end
+  object DebugTimer: TTimer
+    Enabled = False
+    OnTimer = DebugTimerTimer
+    Left = 848
   end
 end
