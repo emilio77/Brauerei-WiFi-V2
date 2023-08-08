@@ -1,15 +1,28 @@
+V2.04
+- Shelly Temperaturmessung integriert
+- Shelly-Plugs integriert
+- Eine Brauerei kann die nächste starten, stoppen oder pausieren
+- Versionsprüfung korrigiert
+- 85.0°C Temperaturen werden ignoriert, da ggf. Fehlermeldung von DS18B20
+- Timeoutzeit für HTTP-Kommunikation verlängert 
+- KBH2.6 Datenbankunterstützung for db_Version 2009 (Zubrühen, Zuschütten und Dekoktion werden nicht unterstützt)
+V2.03
+- Systemkomponente GetTickCount durch eigene Funktion ersetzt 
+  Damit hoffentlich Bug behoben, der gelegentlich zum sofortigen 
+  beenden von Rasten nach dem Start selbiger führt.
 V2.02
 - Abfrage Zusatzfunktion-Automatik-Rückstellung bei Start und verzögertem Start integriert
 - Abfrage Zusatzfunktion-Automatik-Rückstellung bei Brauwerruf integriert
-- Fehler bei nicht erreichbarer KBH Datenbank abgefangen
 - Sensorfehlermeldung -0.1°C wird nicht mehr als Messwert interpretiert
 - Nach Abschluss des Brauvorgangs wird zum Sensortausch aufgefordert, wenn -0.1°C Fehler aufgetreten sind
 - Sensorfehler wird ausgegeben wenn länger als 1 Minute -0.1°C empfangen wird
-- Einstellung "Zum Erreichen der Kochtemperatur dauerheizen" bewirkt Dauerheizen auch bei tempersaturen über der Kochtemperatur
-- KBH Import - Mengen der Hopfengaben werden gerundet
+- Einstellung "Zum Erreichen der Kochtemperatur dauerheizen" bewirkt Dauerheizen auch bei Temperaturen über der Kochtemperatur
 - Tasmota Temperaturabfrage angepasst
 - IP des WEMOS wird bei Nachrichteneingang angezeigt
+- Fehler bei nicht erreichbarer KBH Datenbank abgefangen
+- KBH Import - Mengen der Hopfengaben werden gerundet
 - KBH2.0 Datenbankunterstützung for db_Version 2005
+- KBH2.0 Datenbankunterstützung for db_Version 2006
 V2.01
 - Abfrage Relais-Automatik-Rückstellung bei Start und verzögertem Start integriert
 - Abfrage Relais-Automatik-Rückstellung bei Brauwerruf integriert

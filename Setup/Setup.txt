@@ -12,32 +12,32 @@ Einschaltpuls bis 100°C;10
 Ausschaltpuls bis 100°C;0
 Überschwingungsdämpfung;1.0
 Schalthysterese Heizung;2.0
-NO LONGER USED;1
+Rührwerk mit Heizung koppeln sonst puls;0
 Schalthysterese Kühlung;2.0
 Pulstemperatur Stufe 1;60
 Pulstemperatur Stufe 2;70
 Pulstemperatur Stufe 3;80
 Pulstemperatur Stufe 4;90
-NO LONGER USED;2
+Rührwerk in Heizungphasen AN;0
 Log-Datei schreiben;1
-Rührwerk mit Heizung koppeln;0
+Rührwerk mit Heizung koppeln sonst aus;0
 Temperaturmessungs-Device;IMiniBrauerei€€€/€€€IThermometer
-Rührwerk-Zeitabstand1;5€€€Sekunden
-Rührwerk-Zeitabstand2;5€€€Sekunden
+Rührwerk-Zeitabstand1;0€€€Sekunden
+Rührwerk-Zeitabstand2;0€€€Sekunden
 Kochtemperatur;99
 Temperaturkorrekturwert;0.0
 Temperaturkorrekturfaktor;1.0
 Arduino-IP-Port-Nummer;192.168.178.255
-Arduino-UDP-Port-OUT;6540
-Arduino-UDP-Port-IN;6541
+Arduino-UDP-Port-OUT;6091
+Arduino-UDP-Port-IN;6090
 IP-Heizung;0
 IP-Ruehrwerk;0
 IP-Pumpe;0
 IP-Alarm;0
-IP-Heizung;192.168.178.36
-IP-Ruehrwerk;192.168.178.38
+IP-Heizung;192.168.178.56
+IP-Ruehrwerk;192.168.178.56
 IP-Pumpe;192.168.178.56
-IP-Alarm;192.168.178.36
+IP-Alarm;192.168.178.56
 User-Name-Heizung;admin
 User-Name-Ruehrwerk;admin
 User-Name-Pumpe;admin
@@ -52,25 +52,25 @@ Dauerheizen zum Kochen;1
 Sensorueberwachung;0
 Gepulste Heizung;1
 Gradientbegrenzte Heizung;1
-Hysterese verwenden;1
-Heizung ueberwachen;1
+Hysterese verwenden;0
+Heizung ueberwachen;0
 Überschwingungstemperatur;3.0
 Unterschwingungstemperatur;3.0
 HendiBreak;1
 Kessel-Name;Kessel€€€1
 AlarmPulsDauer;10
-AlarmPauseDauer;22
-Rührwerk-Tabellenbreite;60
+AlarmPauseDauer;41
+Rührwerk-Tabellenbreite;58
 Rührwerk-An-Tabellenbreite;60
 Rührwerk-Aus-Tabellenbreite;60
 Brauerruf-Tabellenbreite;58
-Brauerruf-Text-Tabellenbreite;180
-ZusatzfunktionStart-Tabellenbreite;0
-ZusatzfunktionEnde-Tabellenbreite;0
-Zusatzfunktionen nutzen;1
-Zusatzfunktion1;Mühle
+Brauerruf-Text-Tabellenbreite;320
+ZusatzfunktionStart-Tabellenbreite;50
+ZusatzfunktionEnde-Tabellenbreite;50
+Zusatzfunktionen nutzen;0
+Zusatzfunktion1;Zusatzfunktion€€€1
 Zusatzfunktion2;Zusatzfunktion€€€2
-Zusatzfunktion3;Test
+Zusatzfunktion3;Zusatzfunktion€€€3
 Zusatzfunktion4;Zusatzfunktion€€€4
 Zusatzfunktion5;Zusatzfunktion€€€5
 Zusatzfunktion6;Zusatzfunktion€€€6
@@ -78,18 +78,23 @@ Zusatzfunktion7;Zusatzfunktion€€€7
 Zusatzfunktion8;Zusatzfunktion€€€8
 Zusatzfunktion9;Zusatzfunktion€€€9
 Zusatzfunktion10;Zusatzfunktion€€€10
-Raststartzeit;120
-Rastendzeit;120
-Brauruf-Text-gestartet;150
+Raststartzeit;150
+Rastendzeit;150
+Brauruf-Text-gestartet;0
 IP-Heizung;0
 IP-Ruehrwerk;0
 IP-Pumpe;0
 IP-Alarm;0
-Tasmota-Heizung;192.168.178.40
-Tasmota-Ruehrwerk;192.168.178.40
+Tasmota-Heizung;192.168.178.56
+Tasmota-Ruehrwerk;192.168.178.56
 Tasmota-Pumpe;192.168.178.56
 Tasmota-Alarm;192.168.178.56
 Tasmota-Heizung;Relais€€€1
 Tasmota-Ruehrwerk;Relais€€€2
 Tasmota-Pumpe;Relais€€€3
 Tasmota-Alarm;Relais€€€4
+Next-UDP-Port-IN;5001
+Heizung-Tasmota-Shelly;
+Ruehrwerk-Tasmota-Shelly;
+Pumpe-Tasmota-Shelly;
+Alarm-Tasmota-Shelly;

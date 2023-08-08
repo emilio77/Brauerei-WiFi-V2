@@ -2,7 +2,7 @@ unit Brauerei;
 
 interface
 
-uses                                                                                                                       
+uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, StdCtrls, Buttons, ComCtrls, TabNotBk, ExtCtrls, jpeg,
   AppEvnts, Series, TeEngine, TeeProcs, Chart, OleCtrls, SHDocVw, Menus,
@@ -388,6 +388,25 @@ type
     Edit37: TEdit;
     Edit38: TEdit;
     Button1: TButton;
+    Edit39: TEdit;
+    Label50: TLabel;
+    Label51: TLabel;
+    Edit40: TEdit;
+    Label52: TLabel;
+    ComboBox11: TComboBox;
+    NextUDPSender: TTimer;
+    IdUDPClient2: TIdUDPClient;
+    Label53: TLabel;
+    Button3: TButton;
+    Button14: TButton;
+    Button15: TButton;
+    Label54: TLabel;
+    ComboBox12: TComboBox;
+    ComboBox16: TComboBox;
+    ComboBox27: TComboBox;
+    ComboBox28: TComboBox;
+    Label55: TLabel;
+    Memo3: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure StringGrid1DblClick(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -514,6 +533,12 @@ type
     procedure Edit33Change(Sender: TObject);
     procedure DebugTimerTimer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ComboBox11Exit(Sender: TObject);
+    procedure NextUDPSenderTimer(Sender: TObject);
+    procedure ComboBox11Change(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button14Click(Sender: TObject);
+    procedure Button15Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -539,7 +564,7 @@ var
 
   arduinofloattempalt,arduinofloattemp,arduinotempdelta,floattemp,ptime,atime,
   htime,rtime,gtime,kwert,kfaktor,Gradient,storetempon,storetempoff,
-  e_alt,e_sum
+  e_alt,e_sum,Progstartzeit
   : Extended;
 
   solltemp,Heizung,Ruehrwerk,Kuehlung,Alarm,Datensatz,endpunkt,startpunkt,
@@ -548,11 +573,14 @@ var
   Ruehrpause,Alarmpulsalt,Alarmpausealt,alarmcounter,Alarmpuls,Alarmpause,
   Countlines,Alarmpausezaehler,verzoegerung,verzoegerung2,ruehrverzoegerung,
   ruehrverzoegerung2,HeizungAlt,RuehrwerkAlt,KuehlungAlt,AlarmAlt,HCount,RCount,
-  KCount,ACount,PIDLoop,Restzeit
+  KCount,ACount,PIDLoop,Restzeit,NextUDPCount
   : integer;
 
+  NextChar
+  : char;
+
   Zeit,Pausezeit,Sollzeit,Pausestartzeit
-  : longint;
+  : int64;
 
   Gradientgetter: Array[1..120] of Extended;
 
@@ -561,8 +589,8 @@ var
   sl,sl2: TStringList;
 
 const
-  Version = 'V 2.02 Trial';
-  Buildno = '02020012';
+  Version = 'V 2.04 TRIAL';
+  Buildno = '02040004';
 
 implementation
 
@@ -609,6 +637,11 @@ begin
   aMsgDlg.Left := xPosForm + xPosMessage;
   aMsgDlg.Top := yPosForm + yPosMessage;
   Result := aMsgDlg.ShowModal;
+end;
+
+function MyGetTickCount(): Int64;
+begin
+  Result := round((now-Progstartzeit)*1440*60*1000);
 end;
 
 procedure ZFCheck(RastEnde:boolean);
@@ -718,14 +751,40 @@ end;
 procedure WLANOut_Tasmota;
 var xml,xml2,user,password,ip: string;
 begin
-  if Heizung<>0 then xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20Off';
-  if (Form1.CheckBox8.Checked=true) and (HSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
-  if Ruehrwerk<>0 then xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20Off';
-  if (Form1.CheckBox9.Checked=true) and (RSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
-  if Kuehlung<>0 then  xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20Off';
-  if (Form1.CheckBox10.Checked=true) and (KSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
-  if Alarm<>0 then  xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20Off';
-  if (Form1.CheckBox11.Checked=true) and (ASwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  if Form1.Combobox12.Itemindex <>1 then begin
+    if Heizung<>0 then xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit110.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox6.Itemindex+1)+'%20Off';
+    if (Form1.CheckBox8.Checked=true) and (HSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox16.Itemindex <>1 then begin
+    if Ruehrwerk<>0 then xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit111.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox7.Itemindex+1)+'%20Off';
+    if (Form1.CheckBox9.Checked=true) and (RSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox27.Itemindex <>1 then begin
+    if Kuehlung<>0 then  xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit112.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox8.Itemindex+1)+'%20Off';
+    if (Form1.CheckBox10.Checked=true) and (KSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox28.Itemindex <>1 then begin
+    if Alarm<>0 then  xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20On' else xml:='http://'+Form1.Edit113.Text+'/cm?cmnd=Power'+inttostr(Form1.Combobox9.Itemindex+1)+'%20Off';
+    if (Form1.CheckBox11.Checked=true) and (ASwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+
+  if Form1.Combobox12.Itemindex =1 then begin
+    if Heizung<>0 then xml:='http://'+Form1.Edit110.Text+'/relay/'+inttostr(Form1.Combobox6.Itemindex)+'?turn=on' else xml:='http://'+Form1.Edit110.Text+'/relay/'+inttostr(Form1.Combobox6.Itemindex)+'?turn=off';
+    if (Form1.CheckBox8.Checked=true) and (HSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox16.Itemindex =1 then begin
+    if Ruehrwerk<>0 then xml:='http://'+Form1.Edit111.Text+'/relay/'+inttostr(Form1.Combobox7.Itemindex)+'?turn=on' else xml:='http://'+Form1.Edit111.Text+'/relay/'+inttostr(Form1.Combobox7.Itemindex)+'?turn=off';
+    if (Form1.CheckBox9.Checked=true) and (RSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox27.Itemindex =1 then begin
+    if Kuehlung<>0 then  xml:='http://'+Form1.Edit112.Text+'/relay/'+inttostr(Form1.Combobox8.Itemindex)+'?turn=on' else xml:='http://'+Form1.Edit112.Text+'/relay/'+inttostr(Form1.Combobox8.Itemindex)+'?turn=off';
+    if (Form1.CheckBox10.Checked=true) and (KSwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+  if Form1.Combobox28.Itemindex =1 then begin
+    if Alarm<>0 then  xml:='http://'+Form1.Edit113.Text+'/relay/'+inttostr(Form1.Combobox9.Itemindex)+'?turn=on' else xml:='http://'+Form1.Edit113.Text+'/relay/'+inttostr(Form1.Combobox9.Itemindex)+'?turn=off';
+    if (Form1.CheckBox11.Checked=true) and (ASwitch=true) then ShellExecute(Application.Handle,'open',PChar(pfad+'curl\curl'),PChar(xml),PChar(pfad+'curl'), SW_HIDE);
+  end;
+
 end;
 
 procedure WLANOut;
@@ -851,6 +910,14 @@ begin with Form1 do begin
   IdUDPServer1.Active:=true;
   IdUDPClient1.Active:=true;
   SendeTimer.Enabled := true ;
+end;end;
+
+procedure StartNextUDP;
+begin with Form1 do begin
+  IdUDPClient2.Active:=False;
+  IdUDPClient2.Host:=Edit96.Text;
+  try IdUDPClient2.Port:=strtoint(ComboBox11.Text) except IdUDPClient2.Port:=5010; end;
+  IdUDPClient2.Active:=true;
 end;end;
 
 procedure SetSwitches;
@@ -1006,12 +1073,11 @@ begin
   WriteLn(mySetup,'Tasmota-Ruehrwerk;'+stringreplace(Form.ComboBox7.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Tasmota-Pumpe;'+stringreplace(Form.ComboBox8.Text,' ','€€€',[rfReplaceAll]));
   WriteLn(mySetup,'Tasmota-Alarm;'+stringreplace(Form.ComboBox9.Text,' ','€€€',[rfReplaceAll]));
-  WriteLn(mySetup,'Regler;'+stringreplace(Form.ComboBox2.Text,' ','€€€',[rfReplaceAll]));
-  WriteLn(mySetup,'PID-Dead Band;'+Form.ComboBox10.Text);
-  WriteLn(mySetup,'PID-Kp;'+Form.Edit18.Text);
-  WriteLn(mySetup,'PID-Ki;'+Form.Edit20.Text);
-  WriteLn(mySetup,'PID-Kd;'+Form.Edit31.Text); 
-  WriteLn(mySetup,'Period duration;'+Form.Edit32.Text);
+  WriteLn(mySetup,'Next-UDP-Port-IN;'+Form.ComboBox11.Text);
+  WriteLn(mySetup,'Heizung-Tasmota-Shelly;'+Form.ComboBox12.Text);
+  WriteLn(mySetup,'Ruehrwerk-Tasmota-Shelly;'+Form.ComboBox16.Text);
+  WriteLn(mySetup,'Pumpe-Tasmota-Shelly;'+Form.ComboBox27.Text);
+  WriteLn(mySetup,'Alarm-Tasmota-Shelly;'+Form.ComboBox28.Text);
   CloseFile(mySetup);
 end;
 
@@ -1228,18 +1294,16 @@ begin
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
     Form.Combobox9.ItemIndex := Form.Combobox9.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Combobox2.ItemIndex := Form.Combobox2.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    Form.Combobox11.ItemIndex := Form.Combobox11.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Combobox10.ItemIndex := Form.Combobox10.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+    Form.Combobox12.ItemIndex := Form.Combobox12.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Edit18.Text := sl2[sl2.Count-1];
+    Form.Combobox16.ItemIndex := Form.Combobox16.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Edit20.Text := sl2[sl2.Count-1];
+    Form.Combobox27.ItemIndex := Form.Combobox27.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
     if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Edit31.Text := sl2[sl2.Count-1];
-    if i>sl.Count-1 then switchToStandardSetup; sl2.DelimitedText:=sl[i]; i:=i+1;
-    Form.Edit32.Text := sl2[sl2.Count-1];
-    except
+    Form.Combobox28.ItemIndex := Form.Combobox28.Items.IndexOf(stringreplace(sl2[sl2.Count-1],'€€€',' ',[rfReplaceAll]));
+  except
     file_korrupt:=true;
   end;
   Form1.Edit8Change(Form1);
@@ -1323,7 +1387,7 @@ begin with Form1 do begin
           MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
         end;
       end
-      else
+      else if strtoint(kbhv)<2009 then
       begin
         sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
         try
@@ -1338,9 +1402,26 @@ begin with Form1 do begin
         except
           MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
         end;
+      end
+      else
+      begin
+        sltb := slDb.GetTable('SELECT * FROM Maischplan WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
+        try
+          if sltb.Count > 0 then
+          begin
+            memMaisch.Text := 'Einmaischen - '+floattostr(sltb.FieldAsDouble(sltb.FieldIndex['TempRast']))+chr(176)+'C - 0 min.';
+          end
+          else
+          begin
+            memMaisch.Text := 'Einmaischen - 20'+chr(176)+'C - 0 min.';
+          end;
+        except
+          MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+        end;
       end;
       if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
-      if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+      if strtoint(kbhv)<2009 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+      if strtoint(kbhv)>=2009 then sltb := slDb.GetTable('SELECT * FROM Maischplan WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
       try
         if sltb.Count > 0 then
         begin
@@ -1348,8 +1429,10 @@ begin with Form1 do begin
           begin
             MemText:=UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Name']));
             Delete(MemText, Pos(' ', MemText), 99);
-            MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']))+chr(176)+'C - ';
-            MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer'])+' min.');
+            if strtoint(kbhv)<2009 then MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']))+chr(176)+'C - '
+            else MemText:=MemText+' - '+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'TempRast']))+chr(176)+'C - ';
+            if strtoint(kbhv)<2009 then MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer'])+' min.')
+            else MemText:=MemText+UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'DauerRast'])+' min.');
             memMaisch.Lines.Add(MemText);
             sltb.Next;
           end;
@@ -1404,7 +1487,7 @@ begin with Form1 do begin
         begin
           for i:=1 to sltb.Count do
           begin
-            if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=inttostr(ID)) then
+            if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=inttostr(ID)) then
             begin
               k:=gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']));
               MemText:=inttostr(k)+' min. - ';
@@ -1481,7 +1564,7 @@ begin with Form1 do begin
         MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
     end
-    else
+    else if strtoint(kbhv)<2009 then
     begin
       sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
       try
@@ -1496,18 +1579,36 @@ begin with Form1 do begin
         except
         MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
       end;
+    end
+    else
+    begin
+      sltb := slDb.GetTable('SELECT * FROM Maischplan WHERE SudID = '+inttostr(ID)+' and Typ = 0' );
+      try
+        if sltb.Count > 0 then
+        begin
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := floattostr(sltb.FieldAsDouble(sltb.FieldIndex['TempRast']));
+        end
+        else
+        begin
+          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := '20';
+        end;
+        except
+        MyMessageDlgPos('Keine Einmaischtemperatur in DB vorhanden.', mtInformation, [mbOK], Form1.Left, 350, Form1.Top, 250);
+      end;
     end;
     if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
-    if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
-
+    if strtoint(kbhv)<2009 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+    if strtoint(kbhv)>=2009 then sltb := slDb.GetTable('SELECT * FROM Maischplan WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
     try
       if sltb.Count > 0 then
       begin
         for i:=1 to sltb.Count do
         begin
           Stringgrid1.RowCount:=Stringgrid1.RowCount+1;
-          Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']));
-          Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer']));;
+          if strtoint(kbhv)<2009 then Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Temp']))
+          else Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'TempRast']));
+          if strtoint(kbhv)<2009 then Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'Dauer']))
+          else Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := UTF8ToAnsi(sltb.FieldAsString(sltb.FieldIndex[kbhv2+'DauerRast']));
           sltb.Next;
         end;
       end;
@@ -1533,7 +1634,8 @@ begin with Form1 do begin
     slDBPath := OpenDialog2.FileName;
     sldb := TSQLiteDatabase.Create(slDBPath);
     if strtoint(kbhv)<2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID) );
-    if strtoint(kbhv)>=2005 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+    if strtoint(kbhv)<2009 then sltb := slDb.GetTable('SELECT * FROM Rasten WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
+    if strtoint(kbhv)>=2009 then sltb := slDb.GetTable('SELECT * FROM Maischplan WHERE SudID = '+inttostr(ID)+' and Typ = 1' );
     try
       if sltb.Count > 0 then
       begin
@@ -1598,7 +1700,7 @@ begin with Form1 do begin
             Stringgrid1.Cells[2,Stringgrid1.RowCount-1] := ComboBox38.Text;
             Stringgrid1.Cells[3,Stringgrid1.RowCount-1] := '0';
           end
-          else if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (novw=0) then novw:=1;
+          else if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (novw=0) then novw:=1;
           sltb.Next;
         end;
       end;
@@ -1612,7 +1714,7 @@ begin with Form1 do begin
       begin
         for i:=1 to sltb.Count do
         begin
-          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=Form1.ebID.Text) then
+          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=Form1.ebID.Text) then
           begin
             if (gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<>k) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))>=0) then
             begin
@@ -1650,7 +1752,7 @@ begin with Form1 do begin
       begin
         for i:=1 to sltb.Count do
         begin
-          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) then
+          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) then
           begin
             if (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<>k2) and (c<10) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<0) then
             begin
@@ -1716,7 +1818,7 @@ begin with Form1 do begin
         Tempstr:='';
         for i:=1 to sltb.Count do
         begin
-          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))>=0) then
+          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))>=0) then
           begin
             if (gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<>k) and (Tempstr<>'') then
             begin
@@ -1751,7 +1853,7 @@ begin with Form1 do begin
         Tempstr:='';
         for i:=1 to sltb.Count do
         begin
-          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])='0') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<0) then
+          if (sltb.FieldAsString(sltb.FieldIndex['Vorderwuerze'])<>'1') and (sltb.FieldAsString(sltb.FieldIndex['SudID'])=ebID.Text) and (round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<0) then
           begin
             if (gk-round(sltb.FieldAsDouble(sltb.FieldIndex['Zeit']))<>k) and (Tempstr<>'') then
             begin
@@ -1872,6 +1974,7 @@ begin
   Rast:=false;
   storetempon:=111;
   storetempoff:=0;
+  Progstartzeit:=now;
   for i:=1 to 120 do gradientgetter[i]:=0;
   for i:=1 to 10 do Funktionsinfo[i]:=false;
   Updown2.Visible:=false;
@@ -1932,10 +2035,17 @@ begin
   application.Title:= Edit7.Text + ' - ' + floattostr(round(floattemp)) +'°C - ' + 'Start';
   CloseFile(myFile);
   StartUDP;
+  StartNextUDP;
   if CheckBox5.Checked=true then
   begin
     try
-      Memo2.Text:=idHTTP1.Get('http://www.schopfschoppe.de/Help/version.html');
+      Memo2.Lines.Append('');
+      Memo2.Lines.Strings[0]:=idHTTP1.Get('http://www.schopfschoppe.de/Help/version1.html');
+      Memo2.Lines.Append('');
+      Memo2.Lines.Strings[1]:=idHTTP1.Get('http://www.schopfschoppe.de/Help/version2.html');
+      Memo2.Lines.Append('');
+      Memo2.Lines.Strings[2]:=idHTTP1.Get('http://www.schopfschoppe.de/Help/version3.html');
+      Memo3.Text:=Memo2.Text;
       if (Version=Memo2.Lines.Strings[0]) or (Version=Memo2.Lines.Strings[1]) or (Version=Memo2.Lines.Strings[2]) or (Version=Memo2.Lines.Strings[3]) then
         Memo2.Text:='Version aktuell'
       else
@@ -1974,14 +2084,55 @@ begin with Form1 do begin
       UpDown2.Position := Solltemp;
       Panel4.Caption:=StringGrid1.cells[2,RastCount]+' °C';
       strzeit := FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
-      if (StringGrid1.cells[4,RastCount]='Heizrast') and (Solltemp<=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
-      else if (StringGrid1.cells[4,RastCount]='Kühlrast') and (Solltemp>=floattemp) and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end
-      else if (StringGrid1.cells[4,RastCount]='Zeitrast') and (Rast=false) then begin StringGrid1.cells[14,RastCount]:=strzeit; ZFCheck(false); Rast:=true; zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000; Pausezeit:=0; end;
+      if (StringGrid1.cells[4,RastCount]='Heizrast') and (Solltemp<=floattemp) and (Rast=false) then
+      begin
+        StringGrid1.cells[14,RastCount]:=strzeit;
+        ZFCheck(false);
+        Rast:=true;
+        zeit:=MyGetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
+        if StringGrid1.cells[10,RastCount]='21' then begin NextChar:='s'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='22' then begin NextChar:='p'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='23' then begin NextChar:='e'; NextUDPSender.Enabled:=true; end;
+        Pausezeit:=0;
+      end
+      else if (StringGrid1.cells[4,RastCount]='Kühlrast') and (Solltemp>=floattemp) and (Rast=false) then
+      begin
+        StringGrid1.cells[14,RastCount]:=strzeit;
+        ZFCheck(false);
+        Rast:=true;
+        zeit:=MyGetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
+        if StringGrid1.cells[10,RastCount]='21' then begin NextChar:='s'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='22' then begin NextChar:='p'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='23' then begin NextChar:='e'; NextUDPSender.Enabled:=true; end;
+        Pausezeit:=0;
+      end
+      else if (StringGrid1.cells[4,RastCount]='Zeitrast') and (Rast=false) then
+      begin
+        StringGrid1.cells[14,RastCount]:=strzeit;
+        ZFCheck(false);
+        Rast:=true;
+        zeit:=MyGetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
+        if StringGrid1.cells[10,RastCount]='21' then begin NextChar:='s'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='22' then begin NextChar:='p'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[10,RastCount]='23' then begin NextChar:='e'; NextUDPSender.Enabled:=true; end;
+        Pausezeit:=0;
+      end;
       Sollzeit := strtoint(StringGrid1.cells[3,RastCount])*60000;
-      if Sollzeit>0 then prozent := round((GetTickCount-Zeit-Pausezeit)/Sollzeit*100);
+      if Sollzeit>0 then prozent := round((MyGetTickCount-Zeit-Pausezeit)/Sollzeit*100);
       Restzeit := round(((Sollzeit/60000)*((100-prozent)/100)+0.49)); if restzeit<0 then Restzeit:=0;
       if (Rast=true) and (sollzeit>0) then begin StringGrid1.cells[12,RastCount]:= inttostr(Restzeit); StringGrid1.cells[13,RastCount]:= inttostr(prozent); end;
-      if (Rast=true) and (zeit+Sollzeit+pausezeit<GetTickCount) then begin StringGrid1.cells[13,RastCount]:='100'; StringGrid1.cells[15,RastCount]:=strzeit; ZFCheck(true); if StringGrid1.cells[8,RastCount]='Ja' then Brauerruf:=true; RastCount:=RastCount+1; Rast:=false; end;
+      if (Rast=true) and (zeit+Sollzeit+pausezeit<MyGetTickCount) then
+      begin
+        StringGrid1.cells[13,RastCount]:='100';
+        StringGrid1.cells[15,RastCount]:=strzeit;
+        ZFCheck(true);
+        if StringGrid1.cells[8,RastCount]='Ja' then Brauerruf:=true;
+        if StringGrid1.cells[11,RastCount]='21' then begin NextChar:='s'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[11,RastCount]='22' then begin NextChar:='p'; NextUDPSender.Enabled:=true; end;
+        if StringGrid1.cells[11,RastCount]='23' then begin NextChar:='e'; NextUDPSender.Enabled:=true; end;
+        RastCount:=RastCount+1;
+        Rast:=false;
+      end;
     except
       RastCount:=9999;
       BitBtn3Click(Form1);
@@ -2169,6 +2320,11 @@ begin
     Memo1.Lines.Append('');
     arduinofloattempalt:=arduinofloattemp;
     try arduinotfs:= copy(RecText, 2, 3); arduinofloattemp:=strtofloat(arduinotfs); except end;
+    if (arduinofloattemp=85.0) then
+    begin
+      arduinofloattemp:=arduinofloattempalt;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert 85.0°C erhalten. Wert wird ignoriert!';
+    end;
     arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
     if (arduinofloattemp=9999) then
     begin
@@ -2193,6 +2349,11 @@ begin
     Memo1.Lines.Append('');
     arduinofloattempalt:=arduinofloattemp;
     try arduinotfs:= copy(RecText, 2, 4); arduinofloattemp:=strtofloat(arduinotfs); except end;
+    if (arduinofloattemp=85.0) then
+    begin
+      arduinofloattemp:=arduinofloattempalt;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert 85.0°C erhalten. Wert wird ignoriert!';
+    end;
     arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
     if (arduinofloattemp=9999) then
     begin
@@ -2217,6 +2378,11 @@ begin
     Memo1.Lines.Append('');
     arduinofloattempalt:=arduinofloattemp;
     try arduinotfs:= copy(RecText, 2, 5); arduinofloattemp:=strtofloat(arduinotfs); except end;
+    if (arduinofloattemp=85.0) then
+    begin
+      arduinofloattemp:=arduinofloattempalt;
+      Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert 85.0°C erhalten. Wert wird ignoriert!';
+    end;
     arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
     if (arduinofloattemp=9999) then
     begin
@@ -2427,7 +2593,7 @@ begin
   StringGrid1.PopupMenu.AutoPopup:=false;
   if pause=true then
   begin
-    Pausezeit:=Pausezeit+GetTickCount-Pausestartzeit;
+    Pausezeit:=Pausezeit+MyGetTickCount-Pausestartzeit;
   end;
   if (checkbox32.Checked=true) and (stop=true) then
   begin
@@ -2469,7 +2635,7 @@ begin
     start:=false;
     pause:=true;
     stop:=false;
-    Pausestartzeit:=GetTickCount;
+    Pausestartzeit:=MyGetTickCount;
     StringGrid1.DragMode:=dmManual;
     Stringgrid1.Top:=226; Stringgrid1.Height:=279;
     StringGrid1.PopupMenu.AutoPopup:=true;
@@ -2658,7 +2824,7 @@ end;
 
 procedure TForm1.ComboBox36Exit(Sender: TObject);
 begin
-  editcheck(Edit5,0,9999,'1000');
+  editcheck(TEdit(Sender),0,9999,'1000');
   SendeTimer.Enabled := true;
 end;
 
@@ -2787,7 +2953,13 @@ begin
   begin
     S := StringGrid1.Cells[ACol, ARow];
     Try SI := strtoint(S) except SI:=0; end;
-    if SI>10 then
+    if SI>20 then
+    begin
+      if SI=21 then begin S:='NF START'; StringGrid1.Canvas.Brush.Color := RGB(152,251,152); end
+      else if SI=23 then begin S:='NF STOP'; StringGrid1.Canvas.Brush.Color := RGB(240,128,128); end
+      else if SI=22 then S:='NF PAUSE';
+    end
+    else if SI>10 then
     begin
       S:='ZF '+inttostr(SI-10)+' OFF';
       StringGrid1.Canvas.Brush.Color := RGB(240,128,128);
@@ -3527,7 +3699,7 @@ begin
     LogUpdateTimer.Enabled:=true;
   end
   else
-  begin
+  begin                          
     Button23.Caption:='AutoUpdate Ein';
     LogUpdateTimer.Enabled:=false;
   end;
@@ -3670,7 +3842,7 @@ begin
     StringGrid1.cells[14,RastCount]:=FormatDateTime('dd.mm.yyyy hh:nn:ss', now);
     ZFCheck(false);
     Rast:=true;
-    zeit:=GetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
+    zeit:=MyGetTickCount+strtoint(StringGrid1.cells[12,RastCount])*60000-strtoint(StringGrid1.cells[3,RastCount])*60000;
   end;
 end;
 
@@ -3808,7 +3980,7 @@ end;
 
 procedure TForm1.SensorUeberwachungTimerTimer(Sender: TObject);
 begin
-  AlarmAusgabe('Seit min. 1 Munute kein Temperaturupdate! Sensor prüfen!');
+  AlarmAusgabe('Seit min. 1 Minute kein Temperaturupdate! Sensor prüfen!');
 end;
 
 procedure TForm1.ComboBox45Change(Sender: TObject);
@@ -3885,18 +4057,25 @@ begin
   if Combobox1.ItemIndex>0 then
   begin
     DecimalSeparator := '.';
-    IP:=(Form1.FindComponent('Edit' + IntToStr(109+Combobox1.ItemIndex)) as TEdit).Text;
-    get_url := 'http://'+IP+'/cm?cmnd=status%2010';
+    if Combobox1.ItemIndex>4 then IP:=(Form1.FindComponent('Edit' + IntToStr(105+Combobox1.ItemIndex)) as TEdit).Text
+    else if Combobox1.ItemIndex>0 then IP:=(Form1.FindComponent('Edit' + IntToStr(109+Combobox1.ItemIndex)) as TEdit).Text;
+    if Combobox1.ItemIndex>4 then get_url := 'http://'+IP+'/status'
+    else if Combobox1.ItemIndex>0 then get_url := 'http://'+IP+'/cm?cmnd=status%2010';
     try
       try StringL:=IdHTTP2.Get(get_url); Except end;
 
       Memo1.Lines.Append('');
 
-      StringStart := Pos('"Temperature":', StringL)+14;
-      StringEnd := Pos('"TempUnit', StringL)-2;
+      if Combobox1.ItemIndex>4 then begin StringStart := Pos(',"tC":', StringL)+6; StringEnd := Pos(',"tF"', StringL)-1; end
+      else if Combobox1.ItemIndex>0 then begin StringStart := Pos('"Temperature":', StringL)+14; StringEnd := Pos('"TempUnit', StringL)-2; end;
 
       try
         arduinotfs:= copy(StringL,StringStart,StringEnd-StringStart); arduinofloattemp:=strtofloat(arduinotfs);
+        if (arduinofloattemp=85.0) then
+        begin
+          arduinofloattemp:=arduinofloattempalt;
+          Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Temperaturwert 85.0°C erhalten. Wert wird ignoriert!';
+        end;
         arduinotempdelta:=arduinofloattemp-arduinofloattempalt;
         arduinofloattempalt:=arduinofloattemp;
         if (arduinofloattemp<0) or (arduinofloattemp>=110) or (arduinotempdelta<-5) or (arduinotempdelta>5) then
@@ -3907,11 +4086,11 @@ begin
         else
         begin
           SensorUeberwachungTimer.Enabled:=false;
-          Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('TASMOTA-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
+          Memo1.Lines.Strings[Memo1.Lines.Count-1]:=('TASMOTA_SHELLY-IN - '+datetimetostr(now)+' - '+arduinotfs+' °C'); //Text hinzufügen
         end;
         if (checkbox33.Checked=true) and (start=true) then SensorUeberwachungTimer.Enabled:=true;
       except
-        Memo1.Lines.Strings[Memo1.Lines.Count-1]:='TASMOTA-IN - kein gültiger Temperaturwert empfangen';
+        Memo1.Lines.Strings[Memo1.Lines.Count-1]:='TASMOTA-SHELLY-IN - kein gültiger Temperaturwert empfangen';
       end;
     finally
     end;
@@ -3951,12 +4130,59 @@ begin
     Edit36.Text:=inttostr(Sollzeit);
     Edit37.Text:=inttostr(Restzeit);
     Edit38.Text:=inttostr(Pausezeit);
+    Edit39.Text:=floattostr(now);
+    Edit40.Text:=inttostr(MyGetTickCount());
   end;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
   If Button1.Caption='Start' then Button1.Caption:='Stop' else Button1.Caption:='Start'
+end;
+
+procedure TForm1.ComboBox11Exit(Sender: TObject);
+begin
+  editcheck(TEdit(Sender),0,9999,'1000');
+end;
+
+procedure TForm1.NextUDPSenderTimer(Sender: TObject);
+var xml:string;
+begin
+  NextUDPCount:=NextUDPCount+1;
+  try
+    xml:='T9999'+NextChar;
+    IdUDPClient2.Active := true;
+    IdUDPClient2.Send(xml);
+    IdUDPClient2.Active := false;
+  except
+    Memo1.Lines.Append('');
+    Memo1.Lines.Strings[Memo1.Lines.Count-1]:='Nachfolger - IP antwortet nicht';
+  end;
+  if NextUDPCount>5 then begin NextUDPCount:=0; NextUDPSender.Enabled:=false; end;
+end;
+
+procedure TForm1.ComboBox11Change(Sender: TObject);
+begin
+  if TEdit(Sender).Text='' then TEdit(Sender).Text:='0';
+  StartNextUDP;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+begin
+  NextChar:='s';
+  NextUDPSender.Enabled:=true;
+end;
+
+procedure TForm1.Button14Click(Sender: TObject);
+begin
+  NextChar:='p';
+  NextUDPSender.Enabled:=true;
+end;
+
+procedure TForm1.Button15Click(Sender: TObject);
+begin
+  NextChar:='e';
+  NextUDPSender.Enabled:=true;
 end;
 
 end.

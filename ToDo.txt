@@ -1,6 +1,0 @@
-- Bilder der Buttons beim start laden
-
-  Image5.Picture.LoadFromFile(pfad + 'Graphics\Automatik-aktiv.bmp');
-
-- Automatik Manuell EIN AUS aufteilen
-- Sekunden bei Rast-Rest-Zeit

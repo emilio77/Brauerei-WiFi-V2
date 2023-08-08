@@ -18,6 +18,13 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 15
+  object Label51: TLabel
+    Left = 16
+    Top = 186
+    Width = 25
+    Height = 15
+    Caption = 'Now'
+  end
   object PageControl1: TPageControl
     Left = 5
     Top = 5
@@ -248,7 +255,10 @@ object Form1: TForm1
             'Zusatzfunktion 7'
             'Zusatzfunktion 8'
             'Zusatzfunktion 9'
-            'Zusatzfunktion 10')
+            'Zusatzfunktion 10'
+            'Nachfolge Brauerei Starten'
+            'Nachfolge Brauerei Pausieren'
+            'Nachfolge Brauerei Stoppen')
         end
         object ComboBox5: TComboBox
           Left = 712
@@ -282,7 +292,10 @@ object Form1: TForm1
             'Zusatzfunktion 7'
             'Zusatzfunktion 8'
             'Zusatzfunktion 9'
-            'Zusatzfunktion 10')
+            'Zusatzfunktion 10'
+            'Nachfolge Brauerei Starten'
+            'Nachfolge Brauerei Pausieren'
+            'Nachfolge Brauerei Stoppen')
         end
         object RastTypBtn1: TBitBtn
           Left = 158
@@ -11182,9 +11195,11 @@ object Form1: TForm1
             object Label138: TLabel
               Left = 19
               Top = 24
-              Width = 235
+              Width = 367
               Height = 15
-              Caption = 'IP-OUT:                         Port-OUT:        Port-IN:'
+              Caption = 
+                'IP-OUT:                         Port-OUT:        Port-IN:       ' +
+                '                Nachfolger:'
             end
             object ComboBox36: TComboBox
               Left = 133
@@ -12153,6 +12168,483 @@ object Form1: TForm1
               OnExit = Edit96Exit
               OnKeyPress = Edit96KeyPress
             end
+            object ComboBox11: TComboBox
+              Left = 322
+              Top = 40
+              Width = 65
+              Height = 23
+              Hint = 
+                'VORSICHT !!!!'#13#10'Bitte darauf achten, dass der UDP-OUT-Port '#13#10'des ' +
+                'Arduino/Wemos hier der Port-IN ist !!!'
+              ItemHeight = 15
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              Text = '5001'
+              OnChange = ComboBox11Change
+              OnExit = ComboBox11Exit
+              OnKeyPress = ComboBox36KeyPress
+              Items.Strings = (
+                '1000'
+                '1001'
+                '1002'
+                '1003'
+                '1004'
+                '1005'
+                '1006'
+                '1007'
+                '1008'
+                '1009'
+                '1010'
+                '1011'
+                '1012'
+                '1013'
+                '1014'
+                '1015'
+                '1016'
+                '1017'
+                '1018'
+                '1019'
+                '1020'
+                '1021'
+                '1022'
+                '1023'
+                '1024'
+                '1025'
+                '1026'
+                '1027'
+                '1028'
+                '1029'
+                '1030'
+                '1031'
+                '1032'
+                '1033'
+                '1034'
+                '1035'
+                '1036'
+                '1037'
+                '1038'
+                '1039'
+                '1040'
+                '1041'
+                '1042'
+                '1043'
+                '1044'
+                '1045'
+                '1046'
+                '1047'
+                '1048'
+                '1049'
+                '1050'
+                '2000'
+                '2001'
+                '2002'
+                '2003'
+                '2004'
+                '2005'
+                '2006'
+                '2007'
+                '2008'
+                '2009'
+                '2010'
+                '2011'
+                '2012'
+                '2013'
+                '2014'
+                '2015'
+                '2016'
+                '2017'
+                '2018'
+                '2019'
+                '2020'
+                '2021'
+                '2022'
+                '2023'
+                '2024'
+                '2025'
+                '2026'
+                '2027'
+                '2028'
+                '2029'
+                '2030'
+                '2031'
+                '2032'
+                '2033'
+                '2034'
+                '2035'
+                '2036'
+                '2037'
+                '2038'
+                '2039'
+                '2040'
+                '2041'
+                '2042'
+                '2043'
+                '2044'
+                '2045'
+                '2046'
+                '2047'
+                '2048'
+                '2049'
+                '2050'
+                '3000'
+                '3001'
+                '3002'
+                '3003'
+                '3004'
+                '3005'
+                '3006'
+                '3007'
+                '3008'
+                '3009'
+                '3010'
+                '3011'
+                '3012'
+                '3013'
+                '3014'
+                '3015'
+                '3016'
+                '3017'
+                '3018'
+                '3019'
+                '3020'
+                '3021'
+                '3022'
+                '3023'
+                '3024'
+                '3025'
+                '3026'
+                '3027'
+                '3028'
+                '3029'
+                '3030'
+                '3031'
+                '3032'
+                '3033'
+                '3034'
+                '3035'
+                '3036'
+                '3037'
+                '3038'
+                '3039'
+                '3040'
+                '3041'
+                '3042'
+                '3043'
+                '3044'
+                '3045'
+                '3046'
+                '3047'
+                '3048'
+                '3049'
+                '3050'
+                '4000'
+                '4001'
+                '4002'
+                '4003'
+                '4004'
+                '4005'
+                '4006'
+                '4007'
+                '4008'
+                '4009'
+                '4010'
+                '4011'
+                '4012'
+                '4013'
+                '4014'
+                '4015'
+                '4016'
+                '4017'
+                '4018'
+                '4019'
+                '4020'
+                '4021'
+                '4022'
+                '4023'
+                '4024'
+                '4025'
+                '4026'
+                '4027'
+                '4028'
+                '4029'
+                '4030'
+                '4031'
+                '4032'
+                '4033'
+                '4034'
+                '4035'
+                '4036'
+                '4037'
+                '4038'
+                '4039'
+                '4040'
+                '4041'
+                '4042'
+                '4043'
+                '4044'
+                '4045'
+                '4046'
+                '4047'
+                '4048'
+                '4049'
+                '4050'
+                '5000'
+                '5001'
+                '5002'
+                '5003'
+                '5004'
+                '5005'
+                '5006'
+                '5007'
+                '5008'
+                '5009'
+                '5010'
+                '5011'
+                '5012'
+                '5013'
+                '5014'
+                '5015'
+                '5016'
+                '5017'
+                '5018'
+                '5019'
+                '5020'
+                '5021'
+                '5022'
+                '5023'
+                '5024'
+                '5025'
+                '5026'
+                '5027'
+                '5028'
+                '5029'
+                '5030'
+                '5031'
+                '5032'
+                '5033'
+                '5034'
+                '5035'
+                '5036'
+                '5037'
+                '5038'
+                '5039'
+                '5040'
+                '5041'
+                '5042'
+                '5043'
+                '5044'
+                '5045'
+                '5046'
+                '5047'
+                '5048'
+                '5049'
+                '5050'
+                '6000'
+                '6001'
+                '6002'
+                '6003'
+                '6004'
+                '6005'
+                '6006'
+                '6007'
+                '6008'
+                '6009'
+                '6010'
+                '6011'
+                '6012'
+                '6013'
+                '6014'
+                '6015'
+                '6016'
+                '6017'
+                '6018'
+                '6019'
+                '6020'
+                '6021'
+                '6022'
+                '6023'
+                '6024'
+                '6025'
+                '6026'
+                '6027'
+                '6028'
+                '6029'
+                '6030'
+                '6031'
+                '6032'
+                '6033'
+                '6034'
+                '6035'
+                '6036'
+                '6037'
+                '6038'
+                '6039'
+                '6040'
+                '6041'
+                '6042'
+                '6043'
+                '6044'
+                '6045'
+                '6046'
+                '6047'
+                '6048'
+                '6049'
+                '6050'
+                '7000'
+                '7001'
+                '7002'
+                '7003'
+                '7004'
+                '7005'
+                '7006'
+                '7007'
+                '7008'
+                '7009'
+                '7010'
+                '7011'
+                '7012'
+                '7013'
+                '7014'
+                '7015'
+                '7016'
+                '7017'
+                '7018'
+                '7019'
+                '7020'
+                '7021'
+                '7022'
+                '7023'
+                '7024'
+                '7025'
+                '7026'
+                '7027'
+                '7028'
+                '7029'
+                '7030'
+                '7031'
+                '7032'
+                '7033'
+                '7034'
+                '7035'
+                '7036'
+                '7037'
+                '7038'
+                '7039'
+                '7040'
+                '7041'
+                '7042'
+                '7043'
+                '7044'
+                '7045'
+                '7046'
+                '7047'
+                '7048'
+                '7049'
+                '7050'
+                '8000'
+                '8001'
+                '8002'
+                '8003'
+                '8004'
+                '8005'
+                '8006'
+                '8007'
+                '8008'
+                '8009'
+                '8010'
+                '8011'
+                '8012'
+                '8013'
+                '8014'
+                '8015'
+                '8016'
+                '8017'
+                '8018'
+                '8019'
+                '8020'
+                '8021'
+                '8022'
+                '8023'
+                '8024'
+                '8025'
+                '8026'
+                '8027'
+                '8028'
+                '8029'
+                '8030'
+                '8031'
+                '8032'
+                '8033'
+                '8034'
+                '8035'
+                '8036'
+                '8037'
+                '8038'
+                '8039'
+                '8040'
+                '8041'
+                '8042'
+                '8043'
+                '8044'
+                '8045'
+                '8046'
+                '8047'
+                '8048'
+                '8049'
+                '8050'
+                '9000'
+                '9001'
+                '9002'
+                '9003'
+                '9004'
+                '9005'
+                '9006'
+                '9007'
+                '9008'
+                '9009'
+                '9010'
+                '9011'
+                '9012'
+                '9013'
+                '9014'
+                '9015'
+                '9016'
+                '9017'
+                '9018'
+                '9019'
+                '9020'
+                '9021'
+                '9022'
+                '9023'
+                '9024'
+                '9025'
+                '9026'
+                '9027'
+                '9028'
+                '9029'
+                '9030'
+                '9031'
+                '9032'
+                '9033'
+                '9034'
+                '9035'
+                '9036'
+                '9037'
+                '9038'
+                '9039'
+                '9040'
+                '9041'
+                '9042'
+                '9043'
+                '9044'
+                '9045'
+                '9046'
+                '9047'
+                '9048'
+                '9049'
+                '9050')
+            end
           end
           object GroupBox1: TGroupBox
             Left = 8
@@ -12344,13 +12836,16 @@ object Form1: TForm1
               ItemIndex = 0
               TabOrder = 0
               Text = 'IMiniBrauerei / IThermometer'
-              OnChange = ComboBox45Change
               Items.Strings = (
                 'IMiniBrauerei / IThermometer'
                 'Tasmota Device - Heizung'
                 'Tasmota Device - R'#252'hrwerk'
                 'Tasmota Device - K'#252'hlung'
-                'Tasmota Device - Alarm')
+                'Tasmota Device - Alarm'
+                'Shelly Device - Heizung'
+                'Shelly Device - R'#252'hrwerk'
+                'Shelly Device - K'#252'hlung'
+                'Shelly Device - Alarm')
             end
           end
           object GroupBox10: TGroupBox
@@ -12358,7 +12853,7 @@ object Form1: TForm1
             Top = 168
             Width = 441
             Height = 169
-            Caption = 'Tasmota'
+            Caption = 'Tasmota / Shelly'
             TabOrder = 4
             object Label33: TLabel
               Left = 103
@@ -12373,6 +12868,13 @@ object Form1: TForm1
               Width = 39
               Height = 15
               Caption = 'Relais:'
+            end
+            object Label54: TLabel
+              Left = 315
+              Top = 19
+              Width = 21
+              Height = 15
+              Caption = 'Typ:'
             end
             object CheckBox8: TCheckBox
               Left = 16
@@ -12513,6 +13015,66 @@ object Form1: TForm1
                 'Relais 2'
                 'Relais 3'
                 'Relais 4')
+            end
+            object ComboBox12: TComboBox
+              Left = 313
+              Top = 39
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 12
+              Text = 'Tasmota'
+              Items.Strings = (
+                'Tasmota'
+                'Shelly')
+            end
+            object ComboBox16: TComboBox
+              Left = 313
+              Top = 70
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 13
+              Text = 'Tasmota'
+              Items.Strings = (
+                'Tasmota'
+                'Shelly')
+            end
+            object ComboBox27: TComboBox
+              Left = 313
+              Top = 102
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 14
+              Text = 'Tasmota'
+              Items.Strings = (
+                'Tasmota'
+                'Shelly')
+            end
+            object ComboBox28: TComboBox
+              Left = 313
+              Top = 134
+              Width = 88
+              Height = 23
+              Hint = 'Takt in dem der Prozessstatus im Log-File '#13#10'geloggt wird.'
+              Style = csDropDownList
+              ItemHeight = 15
+              ItemIndex = 0
+              TabOrder = 15
+              Text = 'Tasmota'
+              Items.Strings = (
+                'Tasmota'
+                'Shelly')
             end
           end
         end
@@ -12992,6 +13554,13 @@ object Form1: TForm1
               Height = 15
               Caption = 'Zusatzfunktion 9:'
             end
+            object Label53: TLabel
+              Left = 21
+              Top = 391
+              Width = 112
+              Height = 15
+              Caption = 'Nachfolge Brauerei: '
+            end
             object Edit21: TEdit
               Left = 136
               Top = 62
@@ -13250,6 +13819,51 @@ object Form1: TForm1
               ParentFont = False
               TabOrder = 19
               OnClick = Button100Click
+            end
+            object Button3: TButton
+              Left = 135
+              Top = 389
+              Width = 82
+              Height = 20
+              Caption = 'Starten'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -13
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              TabOrder = 21
+              OnClick = Button3Click
+            end
+            object Button14: TButton
+              Left = 223
+              Top = 389
+              Width = 82
+              Height = 20
+              Caption = 'Pausieren'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -13
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              TabOrder = 22
+              OnClick = Button14Click
+            end
+            object Button15: TButton
+              Left = 311
+              Top = 389
+              Width = 82
+              Height = 20
+              Caption = 'Stoppen'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -13
+              Font.Name = 'Arial'
+              Font.Style = []
+              ParentFont = False
+              TabOrder = 23
+              OnClick = Button15Click
             end
           end
           object GroupBox9: TGroupBox
@@ -17684,6 +18298,27 @@ object Form1: TForm1
         Height = 15
         Caption = 'Pausezeit'
       end
+      object Label50: TLabel
+        Left = 8
+        Top = 130
+        Width = 25
+        Height = 15
+        Caption = 'Now'
+      end
+      object Label52: TLabel
+        Left = 9
+        Top = 154
+        Width = 69
+        Height = 15
+        Caption = 'MyTickCount'
+      end
+      object Label55: TLabel
+        Left = 9
+        Top = 181
+        Width = 41
+        Height = 15
+        Caption = 'Version'
+      end
       object Edit34: TEdit
         Left = 88
         Top = 8
@@ -17727,6 +18362,27 @@ object Form1: TForm1
         Caption = 'Start'
         TabOrder = 5
         OnClick = Button1Click
+      end
+      object Edit39: TEdit
+        Left = 88
+        Top = 128
+        Width = 137
+        Height = 23
+        TabOrder = 6
+      end
+      object Edit40: TEdit
+        Left = 88
+        Top = 152
+        Width = 137
+        Height = 23
+        TabOrder = 7
+      end
+      object Memo3: TMemo
+        Left = 88
+        Top = 179
+        Width = 169
+        Height = 70
+        TabOrder = 8
       end
     end
   end
@@ -18146,7 +18802,7 @@ object Form1: TForm1
   end
   object IdHTTP2: TIdHTTP
     MaxLineAction = maException
-    ReadTimeout = 1000
+    ReadTimeout = 3000
     AuthRetries = 0
     AllowCookies = False
     ProtocolVersion = pv1_0
@@ -18172,5 +18828,20 @@ object Form1: TForm1
     Enabled = False
     OnTimer = DebugTimerTimer
     Left = 848
+  end
+  object NextUDPSender: TTimer
+    Enabled = False
+    OnTimer = NextUDPSenderTimer
+    Left = 448
+  end
+  object IdUDPClient2: TIdUDPClient
+    Active = True
+    BufferSize = 64
+    BroadcastEnabled = True
+    Host = '1.1.1.10'
+    Port = 5011
+    ReceiveTimeout = -1000
+    Left = 887
+    Top = 230
   end
 end
